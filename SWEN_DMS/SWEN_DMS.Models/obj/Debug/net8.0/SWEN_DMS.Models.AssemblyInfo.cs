@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("SWEN_DMS.Models")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+8daf4e351486c41dcbf92babcdc714046a04d9cf")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+7f836d96e7a079776868af89f31dbc798e9865c5")]
 [assembly: System.Reflection.AssemblyProductAttribute("SWEN_DMS.Models")]
 [assembly: System.Reflection.AssemblyTitleAttribute("SWEN_DMS.Models")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
