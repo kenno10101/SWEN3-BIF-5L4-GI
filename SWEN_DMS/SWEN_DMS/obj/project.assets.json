@@ -88,6 +88,16 @@
         "frameworkReferences": [
           "Microsoft.AspNetCore.App"
         ]
+      },
+      "SWEN_DMS.Models/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v8.0",
+        "compile": {
+          "bin/placeholder/SWEN_DMS.Models.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/SWEN_DMS.Models.dll": {}
+        }
       }
     }
   },
@@ -439,10 +449,16 @@
         "swashbuckle.aspnetcore.swaggerui.6.6.2.nupkg.sha512",
         "swashbuckle.aspnetcore.swaggerui.nuspec"
       ]
+    },
+    "SWEN_DMS.Models/1.0.0": {
+      "type": "project",
+      "path": "../SWEN_DMS.Models/SWEN_DMS.Models.csproj",
+      "msbuildProject": "../SWEN_DMS.Models/SWEN_DMS.Models.csproj"
     }
   },
   "projectFileDependencyGroups": {
     "net8.0": [
+      "SWEN_DMS.Models >= 1.0.0",
       "Swashbuckle.AspNetCore >= 6.6.2"
     ]
   },
@@ -470,7 +486,11 @@
       "frameworks": {
         "net8.0": {
           "targetAlias": "net8.0",
-          "projectReferences": {}
+          "projectReferences": {
+            "/Users/kenn/Documents/FH/5. Semester/Software Engineering 3/SWEN3-BIF-5L4-GI/SWEN_DMS/SWEN_DMS.Models/SWEN_DMS.Models.csproj": {
+              "projectPath": "/Users/kenn/Documents/FH/5. Semester/Software Engineering 3/SWEN3-BIF-5L4-GI/SWEN_DMS/SWEN_DMS.Models/SWEN_DMS.Models.csproj"
+            }
+          }
         }
       },
       "warningProperties": {
