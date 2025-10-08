@@ -1,0 +1,6 @@
+@SWEN_DMS_HostAddress = http://localhost:5198
+
+GET {{SWEN_DMS_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
