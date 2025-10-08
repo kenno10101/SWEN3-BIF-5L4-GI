@@ -14,4 +14,8 @@
       <ProjectReference Include="..\SWEN_DMS.Models\SWEN_DMS.Models.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="FileStore\" />
+    </ItemGroup>
+
 </Project>
