@@ -18,3 +18,9 @@ dotnet tool uninstall -g dotnet-aspnet-codegenerator
 dotnet tool install -g dotnet-aspnet-codegenerator
 dotnet tool update -g dotnet-aspnet-codegenerator
 ```
+added packages for solution
+dotnet add package Microsoft.EntityFrameworkCore
+dotnet add package Microsoft.EntityFrameworkCore.Design (manage migrations and to generate database schemas during development)
+dotnet add package Npgsql.EntityFrameworkCore.PostgreSQL (enables EF Core to translate LINQ queries into PostgreSQL-compatible SQL and to interact with a PostgreSQL database)
+dotnet add package Microsoft.EntityFrameworkCore.Tools (provides command-line interface (CLI) tools for Entity Framework Core)
+dotnet tool install --global dotnet-ef (enables EF Core Commands to run from the terminal)

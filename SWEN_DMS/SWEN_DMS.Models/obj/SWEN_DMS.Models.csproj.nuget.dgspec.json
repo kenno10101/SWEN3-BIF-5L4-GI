@@ -1,25 +1,33 @@
 {
   "format": 1,
   "restore": {
-    "/Users/kenn/Documents/FH/5. Semester/Software Engineering 3/SWEN3-BIF-5L4-GI/SWEN_DMS/SWEN_DMS.Models/SWEN_DMS.Models.csproj": {}
+    "C:\\Users\\ASUS\\OneDrive\\Dokumente\\FH\\5. SEMESTER\\SWEN3-BIF-5L4-GI\\SWEN_DMS\\SWEN_DMS.Models\\SWEN_DMS.Models.csproj": {}
   },
   "projects": {
-    "/Users/kenn/Documents/FH/5. Semester/Software Engineering 3/SWEN3-BIF-5L4-GI/SWEN_DMS/SWEN_DMS.Models/SWEN_DMS.Models.csproj": {
+    "C:\\Users\\ASUS\\OneDrive\\Dokumente\\FH\\5. SEMESTER\\SWEN3-BIF-5L4-GI\\SWEN_DMS\\SWEN_DMS.Models\\SWEN_DMS.Models.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/Users/kenn/Documents/FH/5. Semester/Software Engineering 3/SWEN3-BIF-5L4-GI/SWEN_DMS/SWEN_DMS.Models/SWEN_DMS.Models.csproj",
+        "projectUniqueName": "C:\\Users\\ASUS\\OneDrive\\Dokumente\\FH\\5. SEMESTER\\SWEN3-BIF-5L4-GI\\SWEN_DMS\\SWEN_DMS.Models\\SWEN_DMS.Models.csproj",
         "projectName": "SWEN_DMS.Models",
-        "projectPath": "/Users/kenn/Documents/FH/5. Semester/Software Engineering 3/SWEN3-BIF-5L4-GI/SWEN_DMS/SWEN_DMS.Models/SWEN_DMS.Models.csproj",
-        "packagesPath": "/Users/kenn/.nuget/packages/",
-        "outputPath": "/Users/kenn/Documents/FH/5. Semester/Software Engineering 3/SWEN3-BIF-5L4-GI/SWEN_DMS/SWEN_DMS.Models/obj/",
+        "projectPath": "C:\\Users\\ASUS\\OneDrive\\Dokumente\\FH\\5. SEMESTER\\SWEN3-BIF-5L4-GI\\SWEN_DMS\\SWEN_DMS.Models\\SWEN_DMS.Models.csproj",
+        "packagesPath": "C:\\Users\\ASUS\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\ASUS\\OneDrive\\Dokumente\\FH\\5. SEMESTER\\SWEN3-BIF-5L4-GI\\SWEN_DMS\\SWEN_DMS.Models\\obj\\",
         "projectStyle": "PackageReference",
+        "UsingMicrosoftNETSdk": false,
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        ],
         "configFilePaths": [
-          "/Users/kenn/.nuget/NuGet/NuGet.Config"
+          "C:\\Users\\ASUS\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
           "net8.0"
         ],
         "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "C:\\Program Files\\dotnet\\library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -58,7 +66,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/8.0.404/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.414/PortableRuntimeIdentifierGraph.json"
         }
       }
     }

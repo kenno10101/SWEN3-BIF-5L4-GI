@@ -8,6 +8,6 @@ build_property.PlatformNeutralAssembly =
 build_property.EnforceExtendedAnalyzerRules = 
 build_property._SupportedPlatformList = Linux,macOS,Windows
 build_property.RootNamespace = SWEN_DMS.Models
-build_property.ProjectDir = /Users/kenn/Documents/FH/5. Semester/Software Engineering 3/SWEN3-BIF-5L4-GI/SWEN_DMS/SWEN_DMS.Models/
+build_property.ProjectDir = C:\Users\ASUS\OneDrive\Dokumente\FH\5. SEMESTER\SWEN3-BIF-5L4-GI\SWEN_DMS\SWEN_DMS.Models\
 build_property.EnableComHosting = 
 build_property.EnableGeneratedComInterfaceComImportInterop = 
