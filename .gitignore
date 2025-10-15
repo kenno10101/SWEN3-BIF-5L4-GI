@@ -1,0 +1,94 @@
+# ========================
+# Rider / JetBrains
+# ========================
+.idea/
+*.sln.iml
+*.user
+*.suo
+*.userprefs
+*.resharper
+_ReSharper*/
+*.DotSettings.user
+
+# ========================
+# Visual Studio
+# ========================
+.vs/
+*.vscode/
+*.dbmdl
+*.VC.db
+*.VC.VC.opendb
+
+# ========================
+# Build output
+# ========================
+bin/
+obj/
+out/
+publish/
+*.dll
+*.exe
+*.app
+*.so
+*.dylib
+*.pdb
+*.class
+
+SWEN_DMS/SWEN_DMS/bin/
+SWEN_DMS/SWEN_DMS/obj/
+SWEN_DMS/SWEN_DMS.BLL/bin/
+SWEN_DMS/SWEN_DMS.BLL/obj/
+SWEN_DMS/SWEN_DMS.DAL/bin/
+SWEN_DMS/SWEN_DMS.DAL/obj/
+SWEN_DMS/SWEN_DMS.DTOs/bin/
+SWEN_DMS/SWEN_DMS.DTOs/obj/
+SWEN_DMS/SWEN_DMS.Models/bin/
+SWEN_DMS/SWEN_DMS.Models/obj/
+
+# ========================
+# NuGet
+# ========================
+*.nupkg
+packages/
+# NuGet v3
+*.nuget.props
+*.nuget.targets
+*.snupkg
+
+# ========================
+# Rider caches
+# ========================
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# ========================
+# User-specific files
+# ========================
+*.user
+*.userosscache
+*.suo
+*.userprefs
+*.pidb
+*.sln.docstates
+
+# ========================
+# Logs
+# ========================
+*.log
+
+# ========================
+# OS generated files
+# ========================
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# ========================
+# Others
+# ========================
+*.bak
+*.swp
+*.tmp

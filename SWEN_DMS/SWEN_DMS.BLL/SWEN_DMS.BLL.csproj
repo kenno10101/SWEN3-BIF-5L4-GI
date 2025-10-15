@@ -7,4 +7,10 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\SWEN_DMS.DAL\SWEN_DMS.DAL.csproj" />
+      <ProjectReference Include="..\SWEN_DMS.DTOs\SWEN_DMS.DTOs.csproj" />
+      <ProjectReference Include="..\SWEN_DMS.Models\SWEN_DMS.Models.csproj" />
+    </ItemGroup>
+
 </Project>

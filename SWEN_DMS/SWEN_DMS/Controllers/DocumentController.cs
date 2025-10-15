@@ -1,56 +1,44 @@
-using SWEN_DMS.Models;
 using Microsoft.AspNetCore.Mvc;
+using SWEN_DMS.BLL.Services;
+using SWEN_DMS.DTOs;
 
 namespace SWEN_DMS.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-
 public class DocumentController : ControllerBase
 {
-    private static readonly List<Document> _documents = new();
+    private readonly DocumentService _service;
+
+    public DocumentController(DocumentService service)
+    {
+        _service = service;
+    }
 
     [HttpGet("{id}")]
-    public IActionResult Get(Guid id)
+    public async Task<IActionResult> Get(Guid id)
     {
-        var doc = _documents.FirstOrDefault(d => d.Id == id);
+        var doc = await _service.GetDocumentAsync(id);
         return doc is null ? NotFound() : Ok(doc);
     }
 
     [HttpPost("upload")]
-    public async Task<IActionResult> UploadDocument(IFormFile file)
+    public async Task<IActionResult> UploadDocument([FromForm] DocumentCreateDto dto)
     {
-        if (file == null || file.Length == 0)
+        if (dto.File == null || dto.File.Length == 0)
             return BadRequest("No file uploaded.");
 
         var uploadDir = Path.Combine(Directory.GetCurrentDirectory(), "FileStore");
         Directory.CreateDirectory(uploadDir);
 
-        var filePath = Path.Combine(uploadDir, $"{Guid.NewGuid()}_{file.FileName}");
+        var filePath = Path.Combine(uploadDir, $"{Guid.NewGuid()}_{dto.File.FileName}");
         await using (var stream = new FileStream(filePath, FileMode.Create))
         {
-            await file.CopyToAsync(stream);
+            await dto.File.CopyToAsync(stream);
         }
 
-        var extractedText = "[Simulated OCR Text]";
-        var summary = "[Simulated AI Summary]";
-        var tags = "sample,document";
+        var created = await _service.AddDocumentAsync(dto, filePath);
 
-        var doc = new Document
-        {
-            Id = Guid.NewGuid(),
-            FileName = file.FileName,
-            FilePath = filePath,
-            ExtractedText = extractedText,
-            Summary = summary,
-            Tags = tags,
-            UploadedAt = DateTime.UtcNow
-        };
-
-        _documents.Add(doc);
-
-        return CreatedAtAction(nameof(Get), new { id = doc.Id }, doc);
+        return CreatedAtAction(nameof(Get), new { id = created.Id }, created);
     }
-    
-    
 }
