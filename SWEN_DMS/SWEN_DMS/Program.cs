@@ -19,7 +19,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // Hier kommt die Debug-Zeile hin:
-Console.WriteLine("🧩 Connection String in use: " + builder.Configuration.GetConnectionString("DefaultConnection"));
+Console.WriteLine("Connection String in use: " + builder.Configuration.GetConnectionString("DefaultConnection"));
 
 // App erstellen
 var app = builder.Build();
