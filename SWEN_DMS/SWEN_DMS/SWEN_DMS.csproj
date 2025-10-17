@@ -4,6 +4,7 @@
         <TargetFramework>net8.0</TargetFramework>
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
+        <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
     </PropertyGroup>
 
     <ItemGroup>
@@ -24,6 +25,12 @@
       <ProjectReference Include="..\SWEN_DMS.DTOs\SWEN_DMS.DTOs.csproj" />
       <ProjectReference Include="..\SWEN_DMS.Models\SWEN_DMS.Models.csproj" />
       <ProjectReference Include="..\SWEN_DMS.BLL\SWEN_DMS.BLL.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Content Include="..\.dockerignore">
+        <Link>.dockerignore</Link>
+      </Content>
     </ItemGroup>
 
 </Project>

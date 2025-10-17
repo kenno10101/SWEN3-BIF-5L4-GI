@@ -1,4 +1,4 @@
-version: '3.9'
+version: "3.9"
 services:
   postgres:
     image: postgres:16
@@ -12,6 +12,20 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
-
+  rest-server:
+    build:
+      context: .
+      dockerfile: SWEN_DMS/Dockerfile
+    container_name: swen_dms_rest_server
+    restart: always
+    depends_on:
+      - postgres
+    environment:
+      ASPNETCORE_URLS: "http://+:8080"
+      ConnectionStrings__DefaultConnection: "Host=postgres;Port=5432;Database=dms_dev;Username=kendi;Password=kendi"
+      ASPNETCORE_ENVIRONMENT: "Development"
+    ports:
+      - "8080:8080"
+      
 volumes:
   postgres_data:
