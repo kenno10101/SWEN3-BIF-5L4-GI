@@ -26,6 +26,18 @@ services:
       ASPNETCORE_ENVIRONMENT: "Development"
     ports:
       - "8080:8080"
+  web:
+    build:
+      context: ./SWEN_DMS.PL
+      dockerfile: Dockerfile
+    container_name: swen_dms_web
+    restart: always
+    ports:
+      - "8081:80"
+    depends_on:
+      - rest-server  
+    volumes:
+      - ./SWEN_DMS.PL:/usr/share/nginx/html:ro
       
 volumes:
   postgres_data:

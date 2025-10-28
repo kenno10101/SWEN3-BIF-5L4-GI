@@ -1,0 +1,15 @@
+body {
+    font-family: sans-serif;
+    margin: 2rem;
+    background: #f8f9fa;
+}
+
+button {
+    margin-bottom: 1rem;
+    padding: 0.5rem 1rem;
+}
+
+ul {
+    list-style-type: none;
+    padding: 0;
+}
