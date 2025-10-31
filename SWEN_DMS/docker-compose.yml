@@ -37,7 +37,24 @@ services:
     depends_on:
       - rest-server  
     volumes:
-      - ./SWEN_DMS.PL:/usr/share/nginx/html:ro
-      
+      - type: bind
+        source: ./SWEN_DMS.PL/frontend/dist/frontend  
+        target: /usr/share/nginx/html
+        read_only: true
+  frontend-builder:
+    image: node:22
+    container_name: swen_dms_frontend_builder
+    working_dir: /app
+    environment:
+      CHOKIDAR_USEPOLLING: "true"
+      CHOKIDAR_INTERVAL: "150"
+      WATCHPACK_POLLING: "true"
+    command: bash -lc "npm ci && npx ng build --configuration development --watch"
+    volumes:
+      - type: bind
+        source: ./SWEN_DMS.PL/frontend
+        target: /app
+      - /app/node_modules
+       
 volumes:
   postgres_data:

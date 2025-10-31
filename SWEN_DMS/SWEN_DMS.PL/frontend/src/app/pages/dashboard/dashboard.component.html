@@ -1,0 +1,17 @@
+@if (loading) {
+  <div>Loading…</div>
+}
+
+@if (error) {
+  <div>Error: {{ error }}</div>
+}
+
+@if (data) {
+  <h2>Swagger: {{ data.info?.title }} (v{{ data.info?.version }})</h2>
+  <p>Found Endpoints:</p>
+  <ul>
+    @for (p of (data.paths | keyvalue); track p.key) {
+      <li>{{ p.key }}</li>
+    }
+  </ul>
+}
