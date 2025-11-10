@@ -1,0 +1,59 @@
+<section class="detail-wrapper">
+  <a routerLink="/" class="back-link">← Back to overview</a>
+
+  @if (loading) {
+    <div class="state-text">Loading document...</div>
+  }
+
+  @if (error) {
+    <div class="state-text error">{{ error }}</div>
+  }
+
+  @if (!loading && !error && document) {
+    <article class="detail-card">
+      <header class="detail-header">
+        <h2>{{ document.fileName }}</h2>
+        <div class="detail-meta-top">
+          <span class="badge">Document Detail</span>
+          <span class="detail-date">
+            Uploaded on {{ document.uploadedAt | date: 'short' }}
+          </span>
+        </div>
+      </header>
+
+      <div class="detail-body">
+        <div class="detail-block">
+          <h3>Summary</h3>
+          <p>
+            {{ document.summary || 'No summary available.' }}
+          </p>
+        </div>
+
+        <div class="detail-block">
+          <h3>Tags</h3>
+          @if (document.tags) {
+            <div class="tags">
+              <!-- simple: alles als ein Tag; später splittbar -->
+              <span class="tag">{{ document.tags }}</span>
+            </div>
+          } @else {
+            <p class="muted">No tags available.</p>
+          }
+        </div>
+
+        <div class="detail-block">
+          <h3>Document-ID</h3>
+          <p class="doc-id">
+            {{ document.id }}
+          </p>
+        </div>
+      </div>
+    </article>
+  }
+
+  @if (!loading && !error && !document) {
+    <div class="state-text error">
+      Document not found.
+    </div>
+  }
+</section>

@@ -15,6 +15,15 @@ public class DocumentController : ControllerBase
         _service = service;
     }
 
+    // all documents
+    [HttpGet]
+    public async Task<ActionResult<IEnumerable<DocumentDto>>> GetAll()
+    {
+        var docs = await _service.GetAllDocumentsAsync();
+        return Ok(docs);
+    }
+
+    // single document
     [HttpGet("{id}")]
     public async Task<IActionResult> Get(Guid id)
     {

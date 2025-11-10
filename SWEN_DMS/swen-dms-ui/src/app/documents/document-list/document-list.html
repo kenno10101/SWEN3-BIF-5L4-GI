@@ -1,0 +1,70 @@
+<section class="document-section">
+  <header class="document-header">
+    <h2>Documents</h2>
+    <p class="subtitle">
+      Overview of all saved documents.
+    </p>
+  </header>
+
+  @if (loading) {
+    <div class="state-text">Loading...</div>
+  }
+
+  @if (error) {
+    <div class="state-text error">{{ error }}</div>
+  }
+
+  @if (!loading && !error && documents.length) {
+    <table class="document-table">
+      <thead>
+      <tr>
+        <th>Documents</th>
+      </tr>
+      </thead>
+      <tbody>
+        @for (doc of documents; track doc.id) {
+          <tr>
+            <td>
+              <div class="doc-row">
+                <div class="doc-main">
+                  <div class="doc-title">
+                    {{ doc.fileName }}
+                  </div>
+                  <div class="doc-meta">
+                    <span class="doc-summary">
+                      {{ doc.summary || 'No summary available.' }}
+                    </span>
+                    <span class="dot-separator">•</span>
+                    <span class="doc-tags">
+                      {{ doc.tags || 'No Tags' }}
+                    </span>
+                    <span class="dot-separator">•</span>
+                    <span class="doc-date">
+                      {{ doc.uploadedAt | date: 'short' }}
+                    </span>
+                  </div>
+                </div>
+
+                <div class="doc-actions">
+                  <button
+                    type="button"
+                    class="details-btn"
+                    [routerLink]="['/documents', doc.id]"
+                  >
+                    Details
+                  </button>
+                </div>
+              </div>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  }
+
+  @if (!loading && !error && !documents.length) {
+    <div class="state-text empty">
+      No documents available.
+    </div>
+  }
+</section>

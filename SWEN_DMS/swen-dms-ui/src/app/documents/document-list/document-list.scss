@@ -1,0 +1,145 @@
+$green: #0b6b3b;
+
+.document-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.document-header h2 {
+  margin: 0;
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: #111827;
+}
+
+.subtitle {
+  margin: 0.15rem 0 0;
+  font-size: 0.86rem;
+  color: #6b7280;
+}
+
+.state-text {
+  margin-top: 0.8rem;
+  font-size: 0.9rem;
+  color: #6b7280;
+}
+
+.state-text.error {
+  color: #b91c1c;
+}
+
+.state-text.empty {
+  font-style: italic;
+}
+
+/* Tabelle */
+
+.document-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 0.4rem;
+}
+
+.document-table thead th {
+  text-align: left;
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  padding: 0 0 0.35rem;
+  color: #9ca3af;
+  border-bottom: 1px solid rgba(148, 163, 253, 0.08);
+}
+
+.document-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.document-table tbody td {
+  padding: 0.55rem 0 0.55rem 0;
+  border-bottom: 1px solid rgba(15, 23, 42, 0.06); // dezente Linie
+}
+
+/* Dokumentzeile */
+
+.doc-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1.4rem;
+}
+
+.doc-main {
+  display: flex;
+  flex-direction: column;
+  gap: 0.18rem;
+}
+
+.doc-title {
+  font-size: 0.98rem;
+  font-weight: 500;
+  color: #111827;
+}
+
+.doc-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  font-size: 0.78rem;
+  color: #6b7280;
+}
+
+.doc-summary {
+  max-width: 360px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dot-separator {
+  opacity: 0.5;
+}
+
+.doc-tags {
+  font-size: 0.76rem;
+  padding: 0.05rem 0.4rem;
+  border-radius: 999px;
+  background: rgba(11, 107, 59, 0.06);
+  color: #047857;
+}
+
+.doc-date {
+  opacity: 0.9;
+}
+
+/* Actions / Button */
+
+.doc-actions {
+  flex-shrink: 0;
+}
+
+.details-btn {
+  padding: 0.26rem 0.9rem;
+  border-radius: 999px;
+  border: none;
+  background: $green;
+  color: #ffffff;
+  font-size: 0.78rem;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  cursor: pointer;
+  box-shadow: 0 3px 10px rgba(11, 107, 59, 0.26);
+  transition: all 0.18s ease;
+}
+
+.details-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(11, 107, 59, 0.32);
+}
+
+.details-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.2);
+}

@@ -21,6 +21,18 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 // Hier kommt die Debug-Zeile hin:
 Console.WriteLine("Connection String in use: " + builder.Configuration.GetConnectionString("DefaultConnection"));
 
+// CORS
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAngularDev", policy =>
+    {
+        policy
+            .WithOrigins("http://localhost:4200") // Angular Dev Server
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+    });
+});
+
 // App erstellen
 var app = builder.Build();
 
@@ -34,6 +46,7 @@ if (app.Environment.IsDevelopment())
 // HTTPS + Authorization + Controller aktivieren
 app.UseHttpsRedirection();
 app.UseAuthorization();
+app.UseCors("AllowAngularDev");
 app.MapControllers();
 
 // Anwendung starten
