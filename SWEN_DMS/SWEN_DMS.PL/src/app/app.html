@@ -1,0 +1,16 @@
+<nav class="navbar">
+  <div class="nav-logo">SWEN DMS</div>
+  <div class="nav-links">
+    <a
+      routerLink="/"
+      routerLinkActive="active"
+      [routerLinkActiveOptions]="{ exact: true }"
+    >
+      Home
+    </a>
+  </div>
+</nav>
+
+<main class="app-content">
+  <router-outlet></router-outlet>
+</main>

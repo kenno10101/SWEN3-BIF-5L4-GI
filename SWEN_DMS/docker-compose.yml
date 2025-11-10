@@ -32,12 +32,10 @@ services:
       dockerfile: Dockerfile
     container_name: swen_dms_web
     restart: always
-    ports:
-      - "8081:80"
     depends_on:
-      - rest-server  
-    volumes:
-      - ./SWEN_DMS.PL:/usr/share/nginx/html:ro
-      
+      - rest-server
+    ports:
+      - "8085:80"
+
 volumes:
   postgres_data:
