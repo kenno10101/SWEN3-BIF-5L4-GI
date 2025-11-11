@@ -17,4 +17,16 @@ export class DocumentService {
   getById(id: string): Observable<DocumentDto> {
     return this.http.get<DocumentDto>(`${this.documentUrl}/${id}`);
   }
+
+  uploadDocument(file: File, tags?: any): Observable<DocumentDto> {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    if (tags) {
+      Object.keys(tags).forEach(key => {
+        formData.append(key, tags[key]);
+      });
+    }
+    return this.http.post<DocumentDto>(`${this.documentUrl}/upload`, formData);
+  }
 }
