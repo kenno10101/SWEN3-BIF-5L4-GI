@@ -54,6 +54,7 @@ packages/
 *.nuget.props
 *.nuget.targets
 *.snupkg
+node_modules/
 
 # ========================
 # Rider caches
