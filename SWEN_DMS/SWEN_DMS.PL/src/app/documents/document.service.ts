@@ -29,4 +29,8 @@ export class DocumentService {
     }
     return this.http.post<DocumentDto>(`${this.documentUrl}/upload`, formData);
   }
+
+  deleteDocument(id: string): Observable<void> {
+    return this.http.delete<void>(`${this.documentUrl}/${id}`);
+  }
 }

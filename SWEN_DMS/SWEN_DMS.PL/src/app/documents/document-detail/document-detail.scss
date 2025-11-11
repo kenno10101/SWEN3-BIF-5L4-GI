@@ -116,3 +116,23 @@ $green: #0b6b3b;
   color: #6b7280;
   word-break: break-all;
 }
+
+.detail-meta-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  position: relative;
+
+  .delete-btn {
+    position: absolute;
+    top: 0;
+    right: 0;
+    background: red;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+}
