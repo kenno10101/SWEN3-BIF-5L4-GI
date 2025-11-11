@@ -36,6 +36,16 @@ services:
       - rest-server
     ports:
       - "8085:80"
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: swen_dms_rabbitmq
+    restart: always
+    ports:
+      - "5672:5672"     # Broker
+      - "15672:15672"   # Management UI
+    environment:
+      RABBITMQ_DEFAULT_USER: kendi
+      RABBITMQ_DEFAULT_PASS: kendi
 
 volumes:
   postgres_data:
