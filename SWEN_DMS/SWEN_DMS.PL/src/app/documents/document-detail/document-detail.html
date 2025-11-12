@@ -19,6 +19,15 @@
             Uploaded on {{ document.uploadedAt | date: 'short' }}
           </span>
         </div>
+        <div class="detail-meta-top">
+          <button
+          type="button"
+          class="delete-btn"
+          (click)="deleteDocument()"
+          title="Delete document">
+          Delete
+        </button>
+        </div>
       </header>
 
       <div class="detail-body">
