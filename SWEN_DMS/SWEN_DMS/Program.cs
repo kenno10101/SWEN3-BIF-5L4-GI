@@ -1,55 +1,98 @@
+using System;
+using System.Net.Sockets;
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using SWEN_DMS.DAL;
 using SWEN_DMS.DAL.Repositories;
 using SWEN_DMS.BLL.Services;
-
-//comment to push develop branch
+using SWEN_DMS.BLL.Interfaces;
+using SWEN_DMS.BLL.Messaging;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Repository + Service registrieren
+// RabbitMQ-Config + Publisher
+builder.Services.Configure<RabbitMqOptions>(builder.Configuration.GetSection("RabbitMq"));
+builder.Services.AddSingleton<IMessagePublisher, RabbitMqPublisher>();
+
+// Repository + Service
 builder.Services.AddScoped<IDocumentRepository, DocumentRepository>();
 builder.Services.AddScoped<DocumentService>();
 
-// Controller + Swagger aktivieren
+// Controller + Swagger
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// Datenbank (PostgreSQL via EF Core)
+// Database (PostgreSQL via EF Core)
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// Hier kommt die Debug-Zeile hin:
+// Debug
 Console.WriteLine("Connection String in use: " + builder.Configuration.GetConnectionString("DefaultConnection"));
 
 // CORS
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowAngularDev", policy =>
+    options.AddPolicy("AllowWebClients", policy =>
     {
         policy
-            .WithOrigins("http://localhost:4200") // Angular Dev Server
+            .WithOrigins(
+                "http://localhost:4200",
+                "http://localhost:8085"
+            )
             .AllowAnyHeader()
             .AllowAnyMethod();
     });
 });
 
-// App erstellen
 var app = builder.Build();
 
-// Swagger nur in Development anzeigen
+// Swagger only in DEV
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
-// HTTPS + Authorization + Controller aktivieren
-app.UseHttpsRedirection();
+// no HTTPS-Redirect in container
+// app.UseHttpsRedirection();
+
 app.UseAuthorization();
-app.UseCors("AllowAngularDev");
+app.UseCors("AllowWebClients");
+
+// ---- Health (minimal) ----
+app.MapGet("/health", () => Results.Ok(new { status = "ok" }));
+
+// ---- MQ-Health (TCP-Port-Check) ----
+app.MapGet("/health/mq", async (IOptions<RabbitMqOptions> opts) =>
+{
+    var o = opts.Value;
+    try
+    {
+        using var client = new TcpClient();
+        var connectTask = client.ConnectAsync(o.Host, o.Port);
+        var timeoutTask = Task.Delay(TimeSpan.FromSeconds(2));
+        var finished = await Task.WhenAny(connectTask, timeoutTask);
+        if (finished != connectTask || !client.Connected)
+            return Results.Problem(statusCode: 503, title: "mq-unhealthy", detail: "TCP connect timeout");
+
+        return Results.Ok(new { mq = "ok" });
+    }
+    catch (Exception ex)
+    {
+        return Results.Problem(detail: ex.Message, statusCode: 503, title: "mq-unhealthy");
+    }
+});
+
+// MQ-Testendpoint (only DEV)
+app.MapPost("/_mq/test", async (IMessagePublisher publisher) =>
+{
+    var msg = new { Type = "ping", TimeUtc = DateTime.UtcNow };
+    await publisher.PublishAsync(msg);
+    return Results.Ok(new { sent = true });
+});
+
 app.MapControllers();
 
-// Anwendung starten
 app.Run();
