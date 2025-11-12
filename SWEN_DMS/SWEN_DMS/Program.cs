@@ -2,6 +2,10 @@ using Microsoft.EntityFrameworkCore;
 using SWEN_DMS.DAL;
 using SWEN_DMS.DAL.Repositories;
 using SWEN_DMS.BLL.Services;
+using FluentValidation;
+using FluentValidation.AspNetCore;
+using SWEN_DMS.Validators;
+
 
 //comment to push develop branch
 
@@ -15,6 +19,10 @@ builder.Services.AddScoped<DocumentService>();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddValidatorsFromAssemblyContaining<DocumentCreateDtoValidator>();
+builder.Services.AddFluentValidationAutoValidation();
+builder.Services.AddFluentValidationClientsideAdapters();
 
 // Datenbank (PostgreSQL via EF Core)
 builder.Services.AddDbContext<AppDbContext>(options =>

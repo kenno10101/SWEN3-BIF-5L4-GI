@@ -50,4 +50,10 @@ public class DocumentController : ControllerBase
 
         return CreatedAtAction(nameof(Get), new { id = created.Id }, created);
     }
+    
+    [HttpDelete("{id}")]
+    public async Task Delete(Guid id)
+    {
+        await _service.DeleteDocumentAsync(id);
+    }
 }
