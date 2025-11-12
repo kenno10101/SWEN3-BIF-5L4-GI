@@ -4,6 +4,15 @@
     <p class="subtitle">
       Overview of all saved documents.
     </p>
+    <div class="doc-actions">
+      <button
+        type="button"
+        class="details-btn"
+        [routerLink]="['/documents/upload']"
+      >
+        Upload Document
+      </button>
+    </div>
   </header>
 
   @if (loading) {
