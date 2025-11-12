@@ -47,6 +47,16 @@ export class DocumentUpload {
       return;
     }
 
+    if (!['application/pdf', 'image/png', 'image/jpeg'].includes(this.file.type)) {
+      this.errorMessage = 'Only PDF or image files are allowed.';
+      return;
+    }
+
+    if (this.file.size > 10 * 1024 * 1024) { // 10 MB
+      this.errorMessage = 'File too large (max 10 MB).';
+      return;
+    }
+
     this.isUploading = true;
     this.errorMessage = '';
 
