@@ -14,6 +14,7 @@ import { DocumentDto } from '../document.model';
 })
 export class DocumentUpload {
   file?: File;
+  tags?: string;
   isUploading = false;
   errorMessage = '';
   uploaded = false;
@@ -47,8 +48,8 @@ export class DocumentUpload {
       return;
     }
 
-    if (!['application/pdf', 'image/png', 'image/jpeg'].includes(this.file.type)) {
-      this.errorMessage = 'Only PDF or image files are allowed.';
+    if (!['application/pdf', 'text/plain'].includes(this.file.type)) {
+      this.errorMessage = 'Only PDF or TXT are allowed.';
       return;
     }
 
@@ -57,10 +58,15 @@ export class DocumentUpload {
       return;
     }
 
+    if (this.tags != null && this.tags.length > 0 && this.tags.length > 100) {
+      this.errorMessage = 'Tags must be smaller than 100 characters.';
+      return;
+    }
+
     this.isUploading = true;
     this.errorMessage = '';
 
-    this.documentService.uploadDocument(this.file).subscribe({
+    this.documentService.uploadDocument(this.file, this.tags).subscribe({
       next: (uploadedDoc: DocumentDto) => {
         this.isUploading = false;
         this.file = undefined;

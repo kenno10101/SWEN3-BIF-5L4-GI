@@ -12,11 +12,10 @@ public class DocumentCreateDtoValidator : AbstractValidator<DocumentCreateDto>
             .Must(file => file.Length > 0).WithMessage("Uploaded file is empty.")
             .Must(file => file.Length <= 10 * 1024 * 1024)
             .WithMessage("Maximum file size is 10 MB.")
-            .Must(file => file.ContentType == "application/pdf" ||
-                          file.ContentType.StartsWith("image/"))
+            .Must(file => file.ContentType is "application/pdf" or "text/plain")
             .WithMessage("Only PDF or image files are allowed.");
 
         RuleFor(x => x.Tags)
-            .MaximumLength(200).WithMessage("Tags cannot exceed 200 characters.");
+            .MaximumLength(100).WithMessage("Tags cannot exceed 100 characters.");
     }
 }

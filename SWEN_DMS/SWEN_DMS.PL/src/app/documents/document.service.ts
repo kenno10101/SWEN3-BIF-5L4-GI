@@ -23,9 +23,7 @@ export class DocumentService {
     formData.append('file', file);
 
     if (tags) {
-      Object.keys(tags).forEach(key => {
-        formData.append(key, tags[key]);
-      });
+      formData.append('tags', tags);
     }
     return this.http.post<DocumentDto>(`${this.documentUrl}/upload`, formData);
   }
