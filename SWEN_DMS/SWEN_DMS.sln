@@ -14,6 +14,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SWEN_DMS.Tests", "SWEN_DMS.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SWEN_DMS.PL", "SWEN_DMS.PL\SWEN_DMS.PL.csproj", "{1A7B01F1-73B0-4CB3-B2C8-15E72F0C9179}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SWEN_DMS.OcrWorker", "SWEN_DMS.OcrWorker\SWEN_DMS.OcrWorker.csproj", "{375BAA0F-1EAA-43DE-BF68-032802561E4E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -48,5 +50,9 @@ Global
 		{1A7B01F1-73B0-4CB3-B2C8-15E72F0C9179}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1A7B01F1-73B0-4CB3-B2C8-15E72F0C9179}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1A7B01F1-73B0-4CB3-B2C8-15E72F0C9179}.Release|Any CPU.Build.0 = Release|Any CPU
+		{375BAA0F-1EAA-43DE-BF68-032802561E4E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{375BAA0F-1EAA-43DE-BF68-032802561E4E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{375BAA0F-1EAA-43DE-BF68-032802561E4E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{375BAA0F-1EAA-43DE-BF68-032802561E4E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

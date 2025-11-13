@@ -116,23 +116,42 @@ $green: #0b6b3b;
   color: #6b7280;
   word-break: break-all;
 }
+.upload-dropzone {
+  border: 2px dashed #ccc;
+  border-radius: 8px;
+  padding: 2rem;
+  text-align: center;
+  color: #666;
+  transition: border-color 0.2s ease;
+  margin-bottom: 1rem;
 
-.detail-meta-top {
+  &:hover {
+    border-color: #007bff;
+  }
+}
+
+.upload-controls {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  position: relative;
+  gap: 1rem;
+}
 
-  .delete-btn {
-    position: absolute;
-    top: 0;
-    right: 0;
-    background: red;
-    color: white;
-    border: none;
-    padding: 5px 10px;
-    border-radius: 4px;
-    cursor: pointer;
+.file-input {
+  cursor: pointer;
+}
+
+.btn-primary {
+  padding: 0.6rem 1.2rem;
+  border: none;
+  border-radius: 6px;
+  background-color: #007bff;
+  color: #fff;
+  font-weight: 500;
+  cursor: pointer;
+
+  &:disabled {
+    background-color: #999;
+    cursor: not-allowed;
   }
 }

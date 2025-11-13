@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { inject } from '@angular/core';
 import { DocumentService } from '../document.service';
 import { DocumentDto } from '../document.model';
@@ -14,6 +14,7 @@ import { DocumentDto } from '../document.model';
 })
 export class DocumentDetail {
   private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
   private readonly documentService = inject(DocumentService);
 
   loading = true;
@@ -37,6 +38,24 @@ export class DocumentDetail {
         console.error(err);
         this.error = 'Could not load document.';
         this.loading = false;
+      },
+    });
+  }
+
+  deleteDocument(): void {
+    if (!this.document) return;
+
+    const confirmDelete = confirm('Are you sure you want to delete this document?');
+    if (!confirmDelete) return;
+
+    this.documentService.deleteDocument(this.document.id).subscribe({
+      next: () => {
+        alert('Document deleted successfully.');
+        this.router.navigate(['/']); // navigate back to list
+      },
+      error: (err) => {
+        console.error(err);
+        alert('Failed to delete document.');
       },
     });
   }
