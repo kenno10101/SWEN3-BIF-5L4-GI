@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using SWEN_DMS.DAL;
 using SWEN_DMS.DAL.Repositories;
 using SWEN_DMS.BLL.Services;
+using SWEN_DMS.Middleware;
 
 //comment to push develop branch
 
@@ -10,6 +11,11 @@ var builder = WebApplication.CreateBuilder(args);
 // Repository + Service registrieren
 builder.Services.AddScoped<IDocumentRepository, DocumentRepository>();
 builder.Services.AddScoped<DocumentService>();
+
+// Logging
+builder.Logging.ClearProviders();
+builder.Logging.AddConsole();
+builder.Logging.AddDebug();
 
 // Controller + Swagger aktivieren
 builder.Services.AddControllers();
@@ -44,6 +50,9 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+// Exception Handling
+app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 // HTTPS + Authorization + Controller aktivieren
 app.UseHttpsRedirection();
