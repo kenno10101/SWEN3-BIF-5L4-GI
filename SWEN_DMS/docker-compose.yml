@@ -20,10 +20,21 @@ services:
     restart: always
     depends_on:
       - postgres
+      - rabbitmq
     environment:
       ASPNETCORE_URLS: "http://+:8080"
       ConnectionStrings__DefaultConnection: "Host=postgres;Port=5432;Database=dms_dev;Username=kendi;Password=kendi"
       ASPNETCORE_ENVIRONMENT: "Development"
+        
+      # RabbitMQ-Config for REST-Server (Mapping to RabbitMq:... in appsettings.json)
+      RabbitMq__Host: "rabbitmq"
+      RabbitMq__Port: "5672"
+      RabbitMq__User: "kendi"
+      RabbitMq__Password: "kendi"
+      RabbitMq__VirtualHost: "/"
+      RabbitMq__Exchange: "dms.exchange"
+      RabbitMq__Queue: "ocr.requests"
+      RabbitMq__RoutingKey: "ocr.request"
     ports:
       - "8080:8080"
   web:
@@ -36,6 +47,34 @@ services:
       - rest-server
     ports:
       - "8085:80"
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: swen_dms_rabbitmq
+    restart: always
+    ports:
+      - "5672:5672"     # Broker
+      - "15672:15672"   # Management UI
+    environment:
+      RABBITMQ_DEFAULT_USER: kendi
+      RABBITMQ_DEFAULT_PASS: kendi
+
+  ocr-worker:
+    build:
+      context: .
+      dockerfile: SWEN_DMS.OcrWorker/Dockerfile
+    container_name: swen_dms_ocr_worker
+    restart: always
+    depends_on:
+      - rabbitmq
+    environment:
+      RabbitMq__Host: "rabbitmq"
+      RabbitMq__Port: "5672"
+      RabbitMq__User: "kendi"
+      RabbitMq__Password: "kendi"
+      RabbitMq__VirtualHost: "/"
+      RabbitMq__Exchange: "dms.exchange"
+      RabbitMq__Queue: "ocr.requests"
+      RabbitMq__RoutingKey: "ocr.request"
 
 volumes:
   postgres_data:
