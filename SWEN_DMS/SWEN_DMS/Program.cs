@@ -11,6 +11,7 @@ using SWEN_DMS.BLL.Messaging;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using SWEN_DMS.Validators;
+using SWEN_DMS.Middleware;
 
 
 //comment to push develop branch
@@ -25,7 +26,12 @@ builder.Services.AddSingleton<IMessagePublisher, RabbitMqPublisher>();
 builder.Services.AddScoped<IDocumentRepository, DocumentRepository>();
 builder.Services.AddScoped<DocumentService>();
 
-// Controller + Swagger
+// Logging
+builder.Logging.ClearProviders();
+builder.Logging.AddConsole();
+builder.Logging.AddDebug();
+
+// Controller + Swagger aktivieren
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -65,6 +71,9 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+// Exception Handling
+app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 // no HTTPS-Redirect in container
 // app.UseHttpsRedirection();

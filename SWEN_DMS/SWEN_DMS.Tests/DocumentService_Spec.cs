@@ -6,6 +6,7 @@ using SWEN_DMS.DAL.Repositories;
 using SWEN_DMS.Models;
 using SWEN_DMS.DTOs;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -18,13 +19,15 @@ namespace SWEN_DMS.Tests
     public class DocumentServiceTests
     {
         private Mock<IDocumentRepository> _mockRepository = null!;
+        private Mock<ILogger<DocumentService>> _mockLogger = null!;
         private DocumentService _service = null!;
 
         [SetUp]
         public void Setup()
         {
             _mockRepository = new Mock<IDocumentRepository>();
-            _service = new DocumentService(_mockRepository.Object);
+            _mockLogger = new Mock<ILogger<DocumentService>>();
+            _service = new DocumentService(_mockRepository.Object, _mockLogger.Object);
         }
 
         [Test]
