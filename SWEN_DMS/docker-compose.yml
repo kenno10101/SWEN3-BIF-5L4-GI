@@ -58,5 +58,23 @@ services:
       RABBITMQ_DEFAULT_USER: kendi
       RABBITMQ_DEFAULT_PASS: kendi
 
+  ocr-worker:
+    build:
+      context: .
+      dockerfile: SWEN_DMS.OcrWorker/Dockerfile
+    container_name: swen_dms_ocr_worker
+    restart: always
+    depends_on:
+      - rabbitmq
+    environment:
+      RabbitMq__Host: "rabbitmq"
+      RabbitMq__Port: "5672"
+      RabbitMq__User: "kendi"
+      RabbitMq__Password: "kendi"
+      RabbitMq__VirtualHost: "/"
+      RabbitMq__Exchange: "dms.exchange"
+      RabbitMq__Queue: "ocr.requests"
+      RabbitMq__RoutingKey: "ocr.request"
+
 volumes:
   postgres_data:
