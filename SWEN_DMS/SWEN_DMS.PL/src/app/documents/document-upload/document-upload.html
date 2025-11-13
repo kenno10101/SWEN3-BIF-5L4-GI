@@ -1,0 +1,87 @@
+<section class="detail-wrapper">
+  <a routerLink="/" class="back-link">← Back to overview</a>
+
+  @if (isUploading) {
+    <div class="state-text">Uploading document...</div>
+  }
+  @if (errorMessage) {
+    <div class="state-text error">{{ errorMessage }}</div>
+  }
+@if (!isUploading && !errorMessage) {
+  <article class="detail-card">
+    <header class="detail-header">
+      <h2>Upload New Document</h2>
+      <div class="detail-meta-top">
+        <span class="badge">Document Upload</span>
+      </div>
+    </header>
+
+    <div class="detail-body">
+      <div class="upload-dropzone"
+        (drop)="onDrop($event)"
+        (dragover)="onDragOver($event)">
+        @if (file){
+          <p>
+            Selected file: <strong>{{ file.name }}</strong>
+          </p>
+        } @else {
+          <p>Drag & drop a file here, or choose one below.</p>
+        }
+        <input
+          type="file"
+          (change)="onFileSelected($event)"
+          id="fileInput"
+          class="file-input"
+          accept=".pdf, .txt"
+        />
+      </div>
+
+      <div class="detail-block">
+        <label for="tags">Tags (comma-separated)</label>
+        <input
+          type="text"
+          id="tags"
+          name="tags"
+          [(ngModel)]="tags"
+          #tagsField="ngModel"
+          maxlength="100"
+          placeholder="e.g. invoice, contract, 2025"
+          class="form-control"
+        />
+
+        @if (tagsField.invalid && tagsField.touched) {
+          <div class="validation-error">
+            @if (tagsField.errors?.['maxlength']) {
+              <span>Tags cannot exceed 100 characters.</span>
+            }
+          </div>
+        }
+      </div>
+
+      <div class="detail-block upload-controls">
+        <button
+          (click)="upload()"
+          [disabled]="!file || isUploading || tagsField.errors?.['maxLength']"
+          class="btn-primary"
+        >
+          {{ isUploading ? 'Uploading...' : 'Upload Document' }}
+        </button>
+      @if (uploadedDocument){
+        <div>
+          <div class="doc-actions">
+            <button
+              type="button"
+              class="details-btn"
+              (click)="goToDetail()"
+            >
+              Go to uploaded Document detail
+            </button>
+          </div>
+        </div>
+      }
+      </div>
+    </div>
+
+  </article>
+}
+</section>

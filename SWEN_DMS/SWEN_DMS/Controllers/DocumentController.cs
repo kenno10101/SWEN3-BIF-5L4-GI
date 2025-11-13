@@ -1,6 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
 using SWEN_DMS.BLL.Services;
+using SWEN_DMS.BLL.Interfaces;
 using SWEN_DMS.DTOs;
+using SWEN_DMS.DTOs.Messages;
+
 
 namespace SWEN_DMS.Controllers;
 
@@ -10,13 +13,15 @@ public class DocumentController : ControllerBase
 {
     private readonly DocumentService _service;
     private readonly ILogger<DocumentController> _logger;
+    private readonly IMessagePublisher _publisher;   // rabbitmq
     
-    public DocumentController(DocumentService service, ILogger<DocumentController> logger)
+    public DocumentController(DocumentService service, ILogger<DocumentController> logger, IMessagePublisher publisher)
     {
         _service = service;
         _logger = logger;
+        _publisher = publisher;            // rabbitmq
     }
-
+    
     // all documents
     [HttpGet]
     public async Task<ActionResult<IEnumerable<DocumentDto>>> GetAll()
@@ -62,13 +67,24 @@ public class DocumentController : ControllerBase
         }
 
         var created = await _service.AddDocumentAsync(dto, filePath);
+        
+        // send MQ-message (empty OCR worker gets it)
+        var msg = new OcrRequestMessage
+        {
+            DocumentId    = created.Id,                              
+            FileName      = created.FileName,
+            UploadedAtUtc = created.UploadedAt.ToUniversalTime()     
+        };
+        await _publisher.PublishAsync(msg);
+        
         _logger.LogInformation("Document uploaded successfully: {Id}", created.Id);
         return CreatedAtAction(nameof(Get), new { id = created.Id }, created);
     }
     
-    [HttpGet("test-exception")]
-    public IActionResult TestException()
+    [HttpDelete("{id}")]
+    public async Task Delete(Guid id)
     {
-        throw new InvalidOperationException("This is a test exception.");
+        _logger.LogInformation("About to delete document with ID {Id}", id);
+        await _service.DeleteDocumentAsync(id);
     }
 }
