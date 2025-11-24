@@ -2,6 +2,10 @@
 using System.Text.Json;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
+using Minio;
+using Minio.DataModel.Args;
+using SWEN_DMS.DTOs.Messages;
+using SWEN_DMS.OcrWorker;
 
 string host = Environment.GetEnvironmentVariable("RabbitMq__Host") ?? "rabbitmq";
 int    port = int.TryParse(Environment.GetEnvironmentVariable("RabbitMq__Port"), out var p) ? p : 5672;
@@ -12,6 +16,16 @@ string vhost= Environment.GetEnvironmentVariable("RabbitMq__VirtualHost") ?? "/"
 string exchange   = Environment.GetEnvironmentVariable("RabbitMq__Exchange") ?? "dms.exchange";
 string queue      = Environment.GetEnvironmentVariable("RabbitMq__Queue") ?? "ocr.requests";
 string routingKey = Environment.GetEnvironmentVariable("RabbitMq__RoutingKey") ?? "ocr.request";
+
+string minioEndpoint = Environment.GetEnvironmentVariable("Minio__Endpoint") ?? "minio:9000";
+string minioAccessKey = Environment.GetEnvironmentVariable("Minio__AccessKey") ?? "kendi";
+string minioSecretKey = Environment.GetEnvironmentVariable("Minio__SecretKey") ?? "kendi123";
+string minioBucket = Environment.GetEnvironmentVariable("Minio__Bucket") ?? "documents";
+var minioClient = new MinioClient()
+    .WithEndpoint(minioEndpoint)
+    .WithCredentials(minioAccessKey, minioSecretKey)
+    .WithSSL(minioEndpoint.StartsWith("https"))
+    .Build();
 
 var factory = new ConnectionFactory
 {
@@ -41,7 +55,8 @@ consumer.Received += (model, ea) =>
         var json = Encoding.UTF8.GetString(body);
         Console.WriteLine($"[Worker] message: {json}");
 
-        // TODO (später): echte OCR hier
+        // TODO später 1. Fetch PDF from MinIO
+        // TODO (später): 2. echte OCR hier
         // jetzt nur ACK:
         channel.BasicAck(deliveryTag: ea.DeliveryTag, multiple: false);
     }

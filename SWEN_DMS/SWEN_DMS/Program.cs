@@ -10,6 +10,7 @@ using SWEN_DMS.BLL.Interfaces;
 using SWEN_DMS.BLL.Messaging;
 using FluentValidation;
 using FluentValidation.AspNetCore;
+using Minio;
 using SWEN_DMS.Validators;
 using SWEN_DMS.Middleware;
 
@@ -44,6 +45,24 @@ builder.Services.AddFluentValidationClientsideAdapters();
 // Datenbank (PostgreSQL via EF Core)
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+// MinIO
+var minioEndpoint = builder.Configuration["Minio:Endpoint"] ?? "minio";
+var minioPort = int.Parse(builder.Configuration["Minio:Port"] ?? "9000");
+var minioAccessKey = builder.Configuration["Minio:AccessKey"] ?? "kendi";
+var minioSecretKey = builder.Configuration["Minio:SecretKey"] ?? "kendi123";
+var minioBucket = builder.Configuration["Minio:Bucket"] ?? "documents";
+
+builder.Services.AddSingleton<IMinioClient>(sp =>
+    new MinioClient()
+        .WithEndpoint(minioEndpoint, minioPort)
+        .WithCredentials(minioAccessKey, minioSecretKey)
+        .WithSSL(false)
+        .Build()
+);
+
+builder.Services.AddSingleton(sp => minioBucket);
+
 
 // Debug
 Console.WriteLine("Connection String in use: " + builder.Configuration.GetConnectionString("DefaultConnection"));
