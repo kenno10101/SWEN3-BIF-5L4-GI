@@ -14,6 +14,8 @@ dotnet add package Microsoft.EntityFrameworkCore.Proxies
 dotnet add package Npgsql.EntityFrameworkCore.PostgreSQL
 dotnet add package Npgsql.EntityFrameworkCore.PostgreSQL.NetTopologySuite
 
+dotnet add package FluentValidation.AspNetCore
+
 dotnet tool uninstall -g dotnet-aspnet-codegenerator
 dotnet tool install -g dotnet-aspnet-codegenerator
 dotnet tool update -g dotnet-aspnet-codegenerator
