@@ -17,12 +17,13 @@ string exchange   = Environment.GetEnvironmentVariable("RabbitMq__Exchange") ?? 
 string queue      = Environment.GetEnvironmentVariable("RabbitMq__Queue") ?? "ocr.requests";
 string routingKey = Environment.GetEnvironmentVariable("RabbitMq__RoutingKey") ?? "ocr.request";
 
-string minioEndpoint = Environment.GetEnvironmentVariable("Minio__Endpoint") ?? "minio:9000";
+string minioEndpoint = Environment.GetEnvironmentVariable("Minio__Endpoint") ?? "minio";
+int minioPort = int.Parse(Environment.GetEnvironmentVariable("Minio__Port") ?? "9000");
 string minioAccessKey = Environment.GetEnvironmentVariable("Minio__AccessKey") ?? "kendi";
 string minioSecretKey = Environment.GetEnvironmentVariable("Minio__SecretKey") ?? "kendi123";
 string minioBucket = Environment.GetEnvironmentVariable("Minio__Bucket") ?? "documents";
 var minioClient = new MinioClient()
-    .WithEndpoint(minioEndpoint)
+    .WithEndpoint(minioEndpoint, minioPort)
     .WithCredentials(minioAccessKey, minioSecretKey)
     .WithSSL(minioEndpoint.StartsWith("https"))
     .Build();
@@ -47,16 +48,41 @@ channel.QueueBind(queue, exchange, routingKey);
 Console.WriteLine($"[Worker] listening on '{queue}' ...");
 
 var consumer = new EventingBasicConsumer(channel);
-consumer.Received += (model, ea) =>
+consumer.Received += async (model, ea) =>
 {
     try
     {
         var body = ea.Body.ToArray();
         var json = Encoding.UTF8.GetString(body);
         Console.WriteLine($"[Worker] message: {json}");
+        
+        var msg = JsonSerializer.Deserialize<OcrRequestMessage>(json);
+        Console.WriteLine($"[Worker] received OCR job for Document {msg.DocumentId}");
+        
+        string tempPath = Path.Combine(Path.GetTempPath(), msg.PdfKey);
 
-        // TODO später 1. Fetch PDF from MinIO
+        try
+        {
+            await minioClient.GetObjectAsync(
+                new GetObjectArgs()
+                    .WithBucket(minioBucket)
+                    .WithObject(msg.PdfKey)
+                    .WithCallbackStream(async stream =>
+                    {
+                        using var fs = File.Create(tempPath);
+                        await stream.CopyToAsync(fs);
+                    })
+            );
+            Console.WriteLine($"[Worker] downloaded {msg.PdfKey} to {tempPath}");
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine($"[Worker] Failed to download '{msg.PdfKey}' from MinIO: {e.Message}");
+            throw;
+        }
+
         // TODO (später): 2. echte OCR hier
+        // TODO 3: update extracted text in DB (create new update endpoint in rest api)
         // jetzt nur ACK:
         channel.BasicAck(deliveryTag: ea.DeliveryTag, multiple: false);
     }
