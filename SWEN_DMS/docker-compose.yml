@@ -37,7 +37,8 @@ services:
       RabbitMq__RoutingKey: "ocr.request"
       
       # MinIO Config
-      Minio__Endpoint: "minio:9000"
+      Minio__Endpoint: "minio"
+      Minio__Port: "9000"
       Minio__AccessKey: "kendi"
       Minio__SecretKey: "kendi123"
       Minio__Bucket: "documents"

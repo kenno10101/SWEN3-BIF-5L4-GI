@@ -90,6 +90,32 @@ using (var scope = app.Services.CreateScope())
     db.Database.Migrate();
 }
 
+using (var scope = app.Services.CreateScope())
+{
+    var minio = scope.ServiceProvider.GetRequiredService<IMinioClient>();
+    var bucket = scope.ServiceProvider.GetRequiredService<string>();
+
+    try
+    {
+        bool found = await minio.BucketExistsAsync(new Minio.DataModel.Args.BucketExistsArgs().WithBucket(bucket));
+        if (!found)
+        {
+            await minio.MakeBucketAsync(new Minio.DataModel.Args.MakeBucketArgs().WithBucket(bucket));
+            Console.WriteLine($"[MinIO] Bucket '{bucket}' created.");
+        }
+        else
+        {
+            Console.WriteLine($"[MinIO] Bucket '{bucket}' already exists.");
+        }
+
+        Console.WriteLine("[MinIO] Connection verified successfully.");
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"[MinIO ERROR] Could not reach MinIO: {ex.Message}");
+    }
+}
+
 // Swagger only in DEV
 if (app.Environment.IsDevelopment())
 {

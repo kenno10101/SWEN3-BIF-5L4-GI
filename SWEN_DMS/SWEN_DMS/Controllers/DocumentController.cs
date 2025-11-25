@@ -1,4 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
+using Minio;
+using Minio.DataModel.Args;
 using SWEN_DMS.BLL.Services;
 using SWEN_DMS.BLL.Interfaces;
 using SWEN_DMS.DTOs;
@@ -14,12 +16,16 @@ public class DocumentController : ControllerBase
     private readonly DocumentService _service;
     private readonly ILogger<DocumentController> _logger;
     private readonly IMessagePublisher _publisher;   // rabbitmq
+    private readonly IMinioClient _minioClient;
+    private readonly string _bucket;
     
-    public DocumentController(DocumentService service, ILogger<DocumentController> logger, IMessagePublisher publisher)
+    public DocumentController(DocumentService service, ILogger<DocumentController> logger, IMessagePublisher publisher, IMinioClient minioClient, string bucket)
     {
         _service = service;
         _logger = logger;
         _publisher = publisher;            // rabbitmq
+        _minioClient = minioClient;
+        _bucket = bucket;
     }
     
     // all documents
@@ -56,23 +62,38 @@ public class DocumentController : ControllerBase
             _logger.LogInformation("Upload Failed: Document file is empty");
             return BadRequest("No file uploaded.");
         }
+        
+        // Generate object name (ID + original filename)
+        var key = $"{Guid.NewGuid()}_{dto.File.FileName}";
 
-        var uploadDir = Path.Combine(Directory.GetCurrentDirectory(), "FileStore");
-        Directory.CreateDirectory(uploadDir);
-
-        var filePath = Path.Combine(uploadDir, $"{Guid.NewGuid()}_{dto.File.FileName}");
-        await using (var stream = new FileStream(filePath, FileMode.Create))
+        // var uploadDir = Path.Combine(Directory.GetCurrentDirectory(), "FileStore");
+        // Directory.CreateDirectory(uploadDir);
+        //
+        // var filePath = Path.Combine(uploadDir, $"{Guid.NewGuid()}_{dto.File.FileName}");
+        // await using (var stream = new FileStream(filePath, FileMode.Create))
+        // {
+        //     await dto.File.CopyToAsync(stream);
+        // }
+        
+        await using (var stream = dto.File.OpenReadStream())
         {
-            await dto.File.CopyToAsync(stream);
+            await _minioClient.PutObjectAsync(new PutObjectArgs()
+                .WithBucket(_bucket)
+                .WithObject(key)
+                .WithStreamData(stream)
+                .WithObjectSize(dto.File.Length)
+                .WithContentType(dto.File.ContentType)
+            );
         }
 
-        var created = await _service.AddDocumentAsync(dto, filePath);
+        var created = await _service.AddDocumentAsync(dto, key);
         
         // send MQ-message (empty OCR worker gets it)
         var msg = new OcrRequestMessage
         {
             DocumentId    = created.Id,                              
             FileName      = created.FileName,
+            PdfKey        = key,
             UploadedAtUtc = created.UploadedAt.ToUniversalTime()     
         };
         await _publisher.PublishAsync(msg);
