@@ -49,4 +49,11 @@ public class DocumentService
         _logger.LogInformation("Remove document with ID {Id} from repository", id);
         await _repository.DeleteAsync(id);
     }
+    
+    public async Task UpdateExtractedTextAsync(Guid id, string text)
+    {
+        _logger.LogInformation("Update ExtractedText for Document {Id}", id);
+        await _repository.UpdateExtractedTextAsync(id, text);
+    }
+
 }

@@ -5,5 +5,6 @@ public sealed class OcrRequestMessage
     public string Type { get; init; } = "ocr.request";
     public Guid DocumentId { get; init; }
     public string FileName { get; init; } = "";
+    public string PdfKey { get; init; } = "";
     public DateTime UploadedAtUtc { get; init; }
 }

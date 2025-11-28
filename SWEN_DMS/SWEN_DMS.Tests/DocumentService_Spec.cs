@@ -112,5 +112,39 @@ namespace SWEN_DMS.Tests
             // Assert
             _mockRepository.Verify(r => r.DeleteAsync(id), Times.Once);
         }
+        
+        [Test]
+        public async Task UpdateExtractedTextAsync_should_forward_to_repository()
+        {
+            // Arrange
+            var id = Guid.NewGuid();
+            _mockRepository
+                .Setup(r => r.UpdateExtractedTextAsync(id, "hello"))
+                .Returns(Task.CompletedTask)
+                .Verifiable();
+
+            // Act
+            await _service.UpdateExtractedTextAsync(id, "hello");
+
+            // Assert
+            _mockRepository.Verify(r => r.UpdateExtractedTextAsync(id, "hello"), Times.Once);
+        }
+
+        [Test]
+        public void UpdateExtractedTextAsync_should_bubble_up_when_repo_throws()
+        {
+            // Arrange
+            var id = Guid.NewGuid();
+            _mockRepository
+                .Setup(r => r.UpdateExtractedTextAsync(id, It.IsAny<string>()))
+                .ThrowsAsync(new KeyNotFoundException("not found"));
+
+            // Act
+            Func<Task> act = () => _service.UpdateExtractedTextAsync(id, "x");
+
+            // Assert
+            act.Should().ThrowAsync<KeyNotFoundException>();
+        }
+
     }
 }
