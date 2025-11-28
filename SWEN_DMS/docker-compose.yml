@@ -85,6 +85,15 @@ services:
       RabbitMq__Queue: "ocr.requests"
       RabbitMq__RoutingKey: "ocr.request"
       
+      Minio__Endpoint: "minio"
+      Minio__Port: "9000"
+      Minio__AccessKey: "kendi"
+      Minio__SecretKey: "kendi123"
+      Minio__Bucket: "documents"
+      
+      OCR__Lang: "eng+deu"
+      Rest__BaseUrl: "http://rest-server:8080"
+      
   minio:
     image: minio/minio:latest
     container_name: swen_dms_minio

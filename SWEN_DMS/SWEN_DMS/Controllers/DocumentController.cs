@@ -108,4 +108,13 @@ public class DocumentController : ControllerBase
         _logger.LogInformation("About to delete document with ID {Id}", id);
         await _service.DeleteDocumentAsync(id);
     }
+    
+    [HttpPost("{id}/ocr-result")]
+    public async Task<IActionResult> SaveOcrResult(Guid id, [FromBody] OcrResultDto body)
+    {
+        if (body is null) return BadRequest("Missing body");
+        await _service.UpdateExtractedTextAsync(id, body.ExtractedText);
+        return NoContent();
+    }
+
 }
