@@ -21,7 +21,7 @@ To run the project locally, you must create a `.env` file in the solution root w
 ```env
 GENAI_API_KEY=<your-api-key>
 GENAI_MODEL=gemini-2.0-flash
-
+```
 ---
 
 ## High-Level Architecture
@@ -121,3 +121,4 @@ dotnet add package FluentValidation.AspNetCore
 dotnet tool install --global dotnet-ef
 # later updates
 dotnet tool update --global dotnet-ef
+```
