@@ -10,4 +10,5 @@ public interface IDocumentRepository
     Task UpdateAsync(Document document);
     Task DeleteAsync(Guid id);
     Task UpdateExtractedTextAsync(Guid id, string text);
+    Task UpdateSummaryAsync(Guid id, string summary);
 }

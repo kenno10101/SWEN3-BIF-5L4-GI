@@ -116,5 +116,15 @@ public class DocumentController : ControllerBase
         await _service.UpdateExtractedTextAsync(id, body.ExtractedText);
         return NoContent();
     }
+    
+    [HttpPut("{id}/summary")]
+    public async Task<IActionResult> UpdateSummary(Guid id, [FromBody] DocumentSummaryUpdateDto dto)
+    {
+        if (dto is null || string.IsNullOrWhiteSpace(dto.Summary))
+            return BadRequest("Summary is required.");
+
+        await _service.UpdateSummaryAsync(id, dto.Summary);
+        return NoContent();
+    }
 
 }
