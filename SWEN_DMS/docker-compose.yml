@@ -35,6 +35,14 @@ services:
       RabbitMq__Exchange: "dms.exchange"
       RabbitMq__Queue: "ocr.requests"
       RabbitMq__RoutingKey: "ocr.request"
+      
+      # MinIO Config
+      Minio__Endpoint: "minio"
+      Minio__Port: "9000"
+      Minio__AccessKey: "kendi"
+      Minio__SecretKey: "kendi123"
+      Minio__Bucket: "documents"
+
     ports:
       - "8080:8080"
   web:
@@ -66,6 +74,7 @@ services:
     restart: always
     depends_on:
       - rabbitmq
+      - minio
     environment:
       RabbitMq__Host: "rabbitmq"
       RabbitMq__Port: "5672"
@@ -75,6 +84,31 @@ services:
       RabbitMq__Exchange: "dms.exchange"
       RabbitMq__Queue: "ocr.requests"
       RabbitMq__RoutingKey: "ocr.request"
+      
+      Minio__Endpoint: "minio"
+      Minio__Port: "9000"
+      Minio__AccessKey: "kendi"
+      Minio__SecretKey: "kendi123"
+      Minio__Bucket: "documents"
+      
+      OCR__Lang: "eng+deu"
+      Rest__BaseUrl: "http://rest-server:8080"
+      
+  minio:
+    image: minio/minio:latest
+    container_name: swen_dms_minio
+    restart: always
+    ports:
+      - "9000:9000"   # S3 API
+      - "9001:9001"   # MinIO Console
+    environment:
+      MINIO_ROOT_USER: kendi
+      MINIO_ROOT_PASSWORD: kendi123
+    command: server /data --console-address ":9001"
+    volumes:
+      - minio_data:/data
+
 
 volumes:
   postgres_data:
+  minio_data:

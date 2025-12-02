@@ -10,6 +10,7 @@ using SWEN_DMS.BLL.Interfaces;
 using SWEN_DMS.BLL.Messaging;
 using FluentValidation;
 using FluentValidation.AspNetCore;
+using Minio;
 using SWEN_DMS.Validators;
 using SWEN_DMS.Middleware;
 
@@ -45,6 +46,24 @@ builder.Services.AddFluentValidationClientsideAdapters();
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+// MinIO
+var minioEndpoint = builder.Configuration["Minio:Endpoint"] ?? "minio";
+var minioPort = int.Parse(builder.Configuration["Minio:Port"] ?? "9000");
+var minioAccessKey = builder.Configuration["Minio:AccessKey"] ?? "kendi";
+var minioSecretKey = builder.Configuration["Minio:SecretKey"] ?? "kendi123";
+var minioBucket = builder.Configuration["Minio:Bucket"] ?? "documents";
+
+builder.Services.AddSingleton<IMinioClient>(sp =>
+    new MinioClient()
+        .WithEndpoint(minioEndpoint, minioPort)
+        .WithCredentials(minioAccessKey, minioSecretKey)
+        .WithSSL(false)
+        .Build()
+);
+
+builder.Services.AddSingleton(sp => minioBucket);
+
+
 // Debug
 Console.WriteLine("Connection String in use: " + builder.Configuration.GetConnectionString("DefaultConnection"));
 
@@ -69,6 +88,32 @@ using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     db.Database.Migrate();
+}
+
+using (var scope = app.Services.CreateScope())
+{
+    var minio = scope.ServiceProvider.GetRequiredService<IMinioClient>();
+    var bucket = scope.ServiceProvider.GetRequiredService<string>();
+
+    try
+    {
+        bool found = await minio.BucketExistsAsync(new Minio.DataModel.Args.BucketExistsArgs().WithBucket(bucket));
+        if (!found)
+        {
+            await minio.MakeBucketAsync(new Minio.DataModel.Args.MakeBucketArgs().WithBucket(bucket));
+            Console.WriteLine($"[MinIO] Bucket '{bucket}' created.");
+        }
+        else
+        {
+            Console.WriteLine($"[MinIO] Bucket '{bucket}' already exists.");
+        }
+
+        Console.WriteLine("[MinIO] Connection verified successfully.");
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"[MinIO ERROR] Could not reach MinIO: {ex.Message}");
+    }
 }
 
 // Swagger only in DEV

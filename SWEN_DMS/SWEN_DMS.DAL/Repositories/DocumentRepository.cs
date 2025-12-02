@@ -5,42 +5,43 @@ namespace SWEN_DMS.DAL.Repositories;
 
 public class DocumentRepository : IDocumentRepository
 {
-    private readonly AppDbContext _context;
+    private readonly AppDbContext _ctx;
+    public DocumentRepository(AppDbContext ctx) => _ctx = ctx;
 
-    public DocumentRepository(AppDbContext context)
-    {
-        _context = context;
-    }
+    public async Task<IEnumerable<Document>> GetAllAsync() =>
+        await _ctx.Documents.ToListAsync();
 
-    public async Task<IEnumerable<Document>> GetAllAsync()
-    {
-        return await _context.Documents.ToListAsync();
-    }
-
-    public async Task<Document?> GetByIdAsync(Guid id)
-    {
-        return await _context.Documents.FirstOrDefaultAsync(d => d.Id == id);
-    }
+    public async Task<Document?> GetByIdAsync(Guid id) =>
+        await _ctx.Documents.FirstOrDefaultAsync(d => d.Id == id);
 
     public async Task AddAsync(Document document)
     {
-        _context.Documents.Add(document);
-        await _context.SaveChangesAsync();
+        _ctx.Documents.Add(document);
+        await _ctx.SaveChangesAsync();
     }
 
     public async Task UpdateAsync(Document document)
     {
-        _context.Documents.Update(document);
-        await _context.SaveChangesAsync();
+        _ctx.Documents.Update(document);
+        await _ctx.SaveChangesAsync();
     }
 
     public async Task DeleteAsync(Guid id)
     {
-        var doc = await _context.Documents.FirstOrDefaultAsync(d => d.Id == id);
+        var doc = await _ctx.Documents.FirstOrDefaultAsync(d => d.Id == id);
         if (doc != null)
         {
-            _context.Documents.Remove(doc);
-            await _context.SaveChangesAsync();
+            _ctx.Documents.Remove(doc);
+            await _ctx.SaveChangesAsync();
         }
+    }
+
+    public async Task UpdateExtractedTextAsync(Guid id, string text)
+    {
+        var doc = await _ctx.Documents.FirstOrDefaultAsync(d => d.Id == id)
+                  ?? throw new KeyNotFoundException($"Document {id} not found");
+
+        doc.ExtractedText = text;
+        await _ctx.SaveChangesAsync();
     }
 }

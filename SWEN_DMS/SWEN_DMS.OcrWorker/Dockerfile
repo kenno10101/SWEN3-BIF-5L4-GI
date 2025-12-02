@@ -11,5 +11,15 @@ RUN dotnet publish "SWEN_DMS.OcrWorker.csproj" -c Release -o /app/publish /p:Use
 
 FROM base AS final
 WORKDIR /app
+
+# Install Tesseract OCR + Ghostscript
+RUN apt-get update && apt-get install -y \
+    tesseract-ocr \
+    tesseract-ocr-eng \
+    tesseract-ocr-deu \
+    ghostscript \
+    poppler-utils \
+    && rm -rf /var/lib/apt/lists/*
+
 COPY --from=build /app/publish .
 ENTRYPOINT ["dotnet", "SWEN_DMS.OcrWorker.dll"]
