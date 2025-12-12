@@ -44,4 +44,15 @@ public class DocumentRepository : IDocumentRepository
         doc.ExtractedText = text;
         await _ctx.SaveChangesAsync();
     }
+    
+    public async Task UpdateSummaryAsync(Guid id, string summary)
+    {
+        var doc = await _ctx.Documents.FirstOrDefaultAsync(d => d.Id == id);
+        if (doc == null)
+            throw new KeyNotFoundException($"Document {id} not found");
+
+        doc.Summary = summary;
+        await _ctx.SaveChangesAsync();
+    }
+
 }

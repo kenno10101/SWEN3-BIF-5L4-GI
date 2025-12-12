@@ -1,4 +1,12 @@
 version: "3.9"
+
+# --- GenAI-Environment Vars (filled by .env) ---
+x-genai-env: &genai-env
+  GENAI_PROVIDER: "google"                         # gemini
+  GENAI_MODEL: "${GENAI_MODEL:-gemini-2.0-flash}"  # default, override via .env 
+  GENAI_API_KEY: "${GENAI_API_KEY}"                # from .env
+  GENAI_TIMEOUT_SECONDS: "30"
+
 services:
   postgres:
     image: postgres:16
@@ -93,6 +101,40 @@ services:
       
       OCR__Lang: "eng+deu"
       Rest__BaseUrl: "http://rest-server:8080"
+        
+      # target-queue for GenAI
+      GenAI__Exchange: "dms.exchange"
+      GenAI__Queue: "genai.requests"
+      GenAI__RoutingKey: "genai.request"
+      
+      # Provider/Model/API-Key (from .env)
+      <<: *genai-env
+      
+  # GenAI Worker (reads genai.requests)
+  genai-worker:
+    build:
+      context: .
+      dockerfile: SWEN_DMS.GenAIWorker/Dockerfile
+    container_name: swen_dms_genai_worker
+    restart: always
+    depends_on:
+      - rabbitmq
+      - rest-server
+    environment:
+      # RabbitMQ (GenAI input)
+      RabbitMq__Host: "rabbitmq"
+      RabbitMq__Port: "5672"
+      RabbitMq__User: "kendi"
+      RabbitMq__Password: "kendi"
+      RabbitMq__VirtualHost: "/"
+      RabbitMq__Exchange: "dms.exchange"
+      RabbitMq__Queue: "genai.requests"
+      RabbitMq__RoutingKey: "genai.request"
+      
+      Rest__BaseUrl: "http://rest-server:8080"
+      
+      # GenAI config (from .env)
+      <<: *genai-env
       
   minio:
     image: minio/minio:latest

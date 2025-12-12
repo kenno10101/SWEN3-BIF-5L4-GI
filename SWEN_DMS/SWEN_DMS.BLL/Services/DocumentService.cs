@@ -55,5 +55,11 @@ public class DocumentService
         _logger.LogInformation("Update ExtractedText for Document {Id}", id);
         await _repository.UpdateExtractedTextAsync(id, text);
     }
+    
+    public async Task UpdateSummaryAsync(Guid id, string summary)
+    {
+        _logger.LogInformation("UpdateSummary for {Id}", id);
+        await _repository.UpdateSummaryAsync(id, summary);
+    }
 
 }
