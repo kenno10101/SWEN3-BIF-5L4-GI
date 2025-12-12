@@ -7,7 +7,6 @@ using Minio.DataModel.Args;
 using SWEN_DMS.DTOs.Messages;
 using System.Net.Http;
 using System.Net.Http.Json;
-using System.Text;
 
 namespace SWEN_DMS.OcrWorker;
 
@@ -20,7 +19,7 @@ public class OcrWorkerService
     private readonly IMinioClient _minioClient;
     private readonly string _bucket;
 
-    // NEU:
+    // REST
     private readonly string _restBaseUrl;
     private readonly HttpClient _http = new();
 
@@ -31,7 +30,7 @@ public class OcrWorkerService
         string routingKey,
         IMinioClient minioClient,
         string bucket,
-        string restBaseUrl) // << NEU
+        string restBaseUrl)
     {
         _factory = factory;
         _exchange = exchange;
@@ -83,6 +82,9 @@ public class OcrWorkerService
                 // (3) An REST publizieren
                 await SendOcrResultAsync(msg.DocumentId, extractedText);
 
+                // (3b) ➜ An GenAI publizieren (JETZT WICHTIG!)
+                PublishGenAiRequest(channel, msg.DocumentId, extractedText);
+
                 // (4) ACK
                 channel.BasicAck(ea.DeliveryTag, multiple: false);
             }
@@ -99,12 +101,12 @@ public class OcrWorkerService
         Task.Delay(-1).Wait();
     }
 
-    // NEU: OCR-Ergebnis an REST schicken
+    // OCR-Ergebnis an REST schicken
     private async Task SendOcrResultAsync(Guid documentId, string text)
     {
         var url = $"{_restBaseUrl}/api/document/{documentId}/ocr-result";
 
-        var payload = new { extractedText = text }; // passt zum DTO im REST
+        var payload = new { extractedText = text };
         var resp = await _http.PostAsJsonAsync(url, payload);
 
         if (!resp.IsSuccessStatusCode)
@@ -114,6 +116,40 @@ public class OcrWorkerService
                 $"Failed to send OCR result to REST ({(int)resp.StatusCode}): {body}");
         }
     }
+
+    // OCR -> GenAI: publish message in Queue 
+    private void PublishGenAiRequest(IModel channel, Guid documentId, string extractedText)
+    {
+        var genAi = new GenAiRequestMessage
+        {
+            DocumentId = documentId,
+            Text       = extractedText,
+            Model      = Environment.GetEnvironmentVariable("GENAI_MODEL")
+        };
+
+        var gaExchange   = Environment.GetEnvironmentVariable("GenAI__Exchange")   ?? "dms.exchange";
+        var gaRoutingKey = Environment.GetEnvironmentVariable("GenAI__RoutingKey") ?? "genai.request";
+        var gaQueue      = Environment.GetEnvironmentVariable("GenAI__Queue")      ?? "genai.requests";
+
+        channel.ExchangeDeclare(gaExchange, ExchangeType.Direct, durable: true, autoDelete: false);
+        channel.QueueDeclare(gaQueue, durable: true, exclusive: false, autoDelete: false);
+        channel.QueueBind(gaQueue, gaExchange, gaRoutingKey);
+
+        var payload = JsonSerializer.SerializeToUtf8Bytes(genAi);
+        var props   = channel.CreateBasicProperties();
+        props.ContentType  = "application/json";
+        props.DeliveryMode = 2; // persistent
+
+        channel.BasicPublish(
+            exchange: gaExchange,
+            routingKey: gaRoutingKey,
+            basicProperties: props,
+            body: payload
+        );
+
+        Console.WriteLine($"[OCR Worker] forwarded text to GenAI for doc {documentId}");
+    }
+
     private string RunOcr(Stream pdfStream)
     {
         var work = Path.Combine(Path.GetTempPath(), "ocr_" + Guid.NewGuid());
@@ -122,6 +158,10 @@ public class OcrWorkerService
         var pdfPath = Path.Combine(work, "input.pdf");
         using (var fs = File.Create(pdfPath)) pdfStream.CopyTo(fs);
 
+        // Sprache dynamisch aus ENV (Fallback: eng+deu)
+        var lang = Environment.GetEnvironmentVariable("OCR__Lang");
+        if (string.IsNullOrWhiteSpace(lang)) lang = "eng+deu";
+
         // 1) PDF -> PNGs (pdftoppm)
         Run("pdftoppm", $"-png -r 300 \"{pdfPath}\" output", work);
 
@@ -129,46 +169,44 @@ public class OcrWorkerService
         var pages = Directory.GetFiles(work, "output-*.png").OrderBy(s => s).ToArray();
         var parts = new List<string>();
         foreach (var page in pages)
-            parts.Add(RunAndCapture("tesseract", $"\"{page}\" stdout -l eng", work));
+            parts.Add(RunAndCapture("tesseract", $"\"{page}\" stdout -l {lang}", work));
 
         try { Directory.Delete(work, true); } catch { /* ignore */ }
 
         return string.Join(Environment.NewLine + "----" + Environment.NewLine, parts);
-
-        static void Run(string file, string args, string cwd)
-        {
-            var p = new System.Diagnostics.Process
-            {
-                StartInfo = new System.Diagnostics.ProcessStartInfo(file, args)
-                {
-                    WorkingDirectory = cwd,
-                    RedirectStandardError = true,
-                    RedirectStandardOutput = true
-                }
-            };
-            p.Start();
-            p.WaitForExit();
-            if (p.ExitCode != 0) throw new InvalidOperationException($"{file} failed: {p.StandardError.ReadToEnd()}");
-        }
-
-        static string RunAndCapture(string file, string args, string cwd)
-        {
-            var p = new System.Diagnostics.Process
-            {
-                StartInfo = new System.Diagnostics.ProcessStartInfo(file, args)
-                {
-                    WorkingDirectory = cwd,
-                    RedirectStandardError = true,
-                    RedirectStandardOutput = true
-                }
-            };
-            p.Start();
-            var output = p.StandardOutput.ReadToEnd();
-            p.WaitForExit();
-            if (p.ExitCode != 0) throw new InvalidOperationException($"{file} failed: {p.StandardError.ReadToEnd()}");
-            return output;
-        }
     }
 
+    private static void Run(string file, string args, string cwd)
+    {
+        var p = new System.Diagnostics.Process
+        {
+            StartInfo = new System.Diagnostics.ProcessStartInfo(file, args)
+            {
+                WorkingDirectory = cwd,
+                RedirectStandardError = true,
+                RedirectStandardOutput = true
+            }
+        };
+        p.Start();
+        p.WaitForExit();
+        if (p.ExitCode != 0) throw new InvalidOperationException($"{file} failed: {p.StandardError.ReadToEnd()}");
+    }
 
+    private static string RunAndCapture(string file, string args, string cwd)
+    {
+        var p = new System.Diagnostics.Process
+        {
+            StartInfo = new System.Diagnostics.ProcessStartInfo(file, args)
+            {
+                WorkingDirectory = cwd,
+                RedirectStandardError = true,
+                RedirectStandardOutput = true
+            }
+        };
+        p.Start();
+        var output = p.StandardOutput.ReadToEnd();
+        p.WaitForExit();
+        if (p.ExitCode != 0) throw new InvalidOperationException($"{file} failed: {p.StandardError.ReadToEnd()}");
+        return output;
+    }
 }
