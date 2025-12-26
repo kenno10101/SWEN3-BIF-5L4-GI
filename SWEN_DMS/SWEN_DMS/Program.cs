@@ -63,6 +63,13 @@ builder.Services.AddSingleton<IMinioClient>(sp =>
 
 builder.Services.AddSingleton(sp => minioBucket);
 
+// Add HttpClient for SearchService
+builder.Services.AddHttpClient<ISearchService, SearchService>();
+
+// Or if you prefer separate registration:
+builder.Services.AddHttpClient();
+builder.Services.AddScoped<ISearchService, SearchService>();
+
 
 // Debug
 Console.WriteLine("Connection String in use: " + builder.Configuration.GetConnectionString("DefaultConnection"));

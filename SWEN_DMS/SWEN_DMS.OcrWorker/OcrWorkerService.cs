@@ -85,6 +85,8 @@ public class OcrWorkerService
                 // (3b) ➜ An GenAI publizieren (JETZT WICHTIG!)
                 PublishGenAiRequest(channel, msg.DocumentId, extractedText);
 
+                await SendToIndexingQueue(channel, msg.DocumentId, msg.PdfKey, extractedText);
+
                 // (4) ACK
                 channel.BasicAck(ea.DeliveryTag, multiple: false);
             }
@@ -208,5 +210,33 @@ public class OcrWorkerService
         p.WaitForExit();
         if (p.ExitCode != 0) throw new InvalidOperationException($"{file} failed: {p.StandardError.ReadToEnd()}");
         return output;
+    }
+    
+    private async Task SendToIndexingQueue(IModel channel, Guid documentId, string fileName, string extractedText)
+    {
+        var indexingRequest = new
+        {
+            DocumentId = documentId,
+            FileName = fileName,
+            ExtractedText = extractedText,
+            Summary = "", // Will be filled by GenAI worker
+            Tags = "",
+            UploadedAt = DateTime.UtcNow
+        };
+
+        var message = JsonSerializer.Serialize(indexingRequest);
+        var body = Encoding.UTF8.GetBytes(message);
+
+        var properties = channel.CreateBasicProperties();
+        properties.Persistent = true;
+
+        channel.BasicPublish(
+            exchange: "dms.exchange",
+            routingKey: "indexing.request",
+            basicProperties: properties,
+            body: body
+        );
+
+        Console.WriteLine($"Indexing request sent for document {documentId}");
     }
 }
