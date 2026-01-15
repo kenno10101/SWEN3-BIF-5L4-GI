@@ -69,10 +69,12 @@ builder.Services.AddSingleton<IMinioClient>(sp =>
 
 builder.Services.AddSingleton(sp => minioBucket);
 
+builder.Services.AddScoped<IFileStore, MinioFileStore>();
+
+
 // Add HttpClient for SearchService
 builder.Services.AddHttpClient<ISearchService, SearchService>();
 
-// Or if you prefer separate registration:
 builder.Services.AddHttpClient();
 builder.Services.AddScoped<ISearchService, SearchService>();
 
@@ -180,3 +182,6 @@ app.MapPost("/_mq/test", async (IMessagePublisher publisher) =>
 app.MapControllers();
 
 app.Run();
+
+//integration test
+public partial class Program { }
