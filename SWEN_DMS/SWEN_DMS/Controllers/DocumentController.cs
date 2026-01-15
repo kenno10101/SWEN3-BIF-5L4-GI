@@ -107,6 +107,12 @@ public class DocumentController : ControllerBase
     {
         _logger.LogInformation("About to delete document with ID {Id}", id);
         await _service.DeleteDocumentAsync(id);
+        
+        var deleteMessage = new DeleteDocumentMessage
+        {
+            DocumentId = id
+        };
+        await _publisher.PublishAsync(deleteMessage, routingKeyOverride: "indexing.request");
     }
     
     [HttpPost("{id}/ocr-result")]

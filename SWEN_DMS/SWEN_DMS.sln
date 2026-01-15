@@ -18,6 +18,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SWEN_DMS.OcrWorker", "SWEN_
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SWEN_DMS.GenAIWorker", "SWEN_DMS.GenAIWorker\SWEN_DMS.GenAIWorker.csproj", "{5D235B42-BCFB-4593-9118-A5401165CEAA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SWEN_DMS.IndexingWorker", "SWEN_DMS.IndexingWorker\SWEN_DMS.IndexingWorker.csproj", "{6FAD316F-7B5C-4B4B-8E81-C4A55CFABC8F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -60,5 +62,9 @@ Global
 		{5D235B42-BCFB-4593-9118-A5401165CEAA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5D235B42-BCFB-4593-9118-A5401165CEAA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5D235B42-BCFB-4593-9118-A5401165CEAA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6FAD316F-7B5C-4B4B-8E81-C4A55CFABC8F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6FAD316F-7B5C-4B4B-8E81-C4A55CFABC8F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6FAD316F-7B5C-4B4B-8E81-C4A55CFABC8F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6FAD316F-7B5C-4B4B-8E81-C4A55CFABC8F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
