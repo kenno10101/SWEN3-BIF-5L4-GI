@@ -13,6 +13,31 @@
         Upload Document
       </button>
     </div>
+    <div class="search-bar">
+      <input
+        class="search-input"
+        type="text"
+        placeholder="Search documents..."
+        [(ngModel)]="searchQuery"
+        (keyup.enter)="onSearch()"
+      />
+
+      <button type="button" class="details-btn" (click)="onSearch()">
+        Search
+      </button>
+
+      @if (isSearching) {
+        <button type="button" class="clear-btn" (click)="clearSearch()">
+          Clear
+        </button>
+      }
+    </div>
+
+    @if (isSearching && searchResult) {
+      <div class="state-text">
+        Found {{ searchResult.totalHits }} results.
+      </div>
+    }
   </header>
 
   @if (loading) {
@@ -23,7 +48,78 @@
     <div class="state-text error">{{ error }}</div>
   }
 
-  @if (!loading && !error && documents.length) {
+  @if (!loading && !error && isSearching && searchDocuments.length) {
+    <table class="document-table">
+      <thead>
+      <tr>
+        <th>Search Results</th>
+      </tr>
+      </thead>
+      <tbody>
+        @for (doc of searchDocuments; track doc.documentId) {
+          <tr>
+            <td>
+              <div class="doc-row">
+                <div class="doc-main">
+                  <div class="doc-title">
+                    {{ doc.fileName }}
+                  </div>
+                  <div class="doc-meta">
+                  <span class="doc-summary">
+                    {{ doc.summary || 'No summary available.' }}
+                  </span>
+                    <span class="dot-separator">•</span>
+                    <span class="doc-tags">
+                    {{ (doc.tags?.length ? doc.tags.join(', ') : 'No Tags') }}
+                  </span>
+                    <span class="dot-separator">•</span>
+                    <span class="doc-date">
+                    {{ doc.uploadedAt | date: 'short' }}
+                  </span>
+                  </div>
+                </div>
+
+                <div class="doc-actions">
+                  <button
+                    type="button"
+                    class="details-btn"
+                    [routerLink]="['/documents', doc.documentId]"
+                  >
+                    Details
+                  </button>
+                </div>
+              </div>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+
+    <!-- simple pagination -->
+    <div class="pagination">
+      <button
+        type="button"
+        class="page-btn"
+        [disabled]="page <= 1"
+        (click)="goToPage(page - 1)"
+      >
+        Prev
+      </button>
+
+      <span class="page-info">Page {{ page }}</span>
+
+      <button
+        type="button"
+        class="page-btn"
+        [disabled]="!searchResult || (page * pageSize) >= searchResult.totalHits"
+        (click)="goToPage(page + 1)"
+      >
+        Next
+      </button>
+    </div>
+  }
+
+  @if (!loading && !error && !isSearching && documents.length) {
     <table class="document-table">
       <thead>
       <tr>
@@ -40,17 +136,17 @@
                     {{ doc.fileName }}
                   </div>
                   <div class="doc-meta">
-                    <span class="doc-summary">
-                      {{ doc.summary || 'No summary available.' }}
-                    </span>
+                  <span class="doc-summary">
+                    {{ doc.summary || 'No summary available.' }}
+                  </span>
                     <span class="dot-separator">•</span>
                     <span class="doc-tags">
-                      {{ doc.tags || 'No Tags' }}
-                    </span>
+                    {{ doc.tags || 'No Tags' }}
+                  </span>
                     <span class="dot-separator">•</span>
                     <span class="doc-date">
-                      {{ doc.uploadedAt | date: 'short' }}
-                    </span>
+                    {{ doc.uploadedAt | date: 'short' }}
+                  </span>
                   </div>
                 </div>
 
@@ -71,9 +167,17 @@
     </table>
   }
 
-  @if (!loading && !error && !documents.length) {
+  @if (!loading && !error && isSearching && searchResult && !searchDocuments.length) {
+    <div class="state-text empty">
+      No results found.
+    </div>
+  }
+
+
+  @if (!loading && !error && !isSearching && !documents.length) {
     <div class="state-text empty">
       No documents available.
     </div>
   }
+
 </section>

@@ -85,7 +85,7 @@ public class OcrWorkerService
                 // (3b) ➜ An GenAI publizieren (JETZT WICHTIG!)
                 PublishGenAiRequest(channel, msg.DocumentId, extractedText);
 
-                await SendToIndexingQueue(channel, msg.DocumentId, msg.PdfKey, extractedText);
+                await SendToIndexingQueue(channel, msg.DocumentId, msg.FileName, extractedText);
 
                 // (4) ACK
                 channel.BasicAck(ea.DeliveryTag, multiple: false);

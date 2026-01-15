@@ -35,21 +35,34 @@ public class SearchService : ISearchService
                 size = size,
                 query = new
                 {
-                    multi_match = new
+                    @bool = new
                     {
-                        query = query,
-                        fields = new[] { "extractedText^2", "fileName^1.5", "summary", "tags" },
-                        fuzziness = "AUTO"
+                        should = new object[]
+                        {
+                            new
+                            {
+                                multi_match = new
+                                {
+                                    query = query,
+                                    fields = new[] { "extractedText^2", "fileName^1.5", "summary", "tags" },
+                                    fuzziness = "AUTO"
+                                }
+                            },
+                            
+                            new
+                            {
+                                prefix = new
+                                {
+                                    fileName = new
+                                    {
+                                        value = query.ToLower()
+                                    }
+                                }
+                            }
+                        },
+                        minimum_should_match = 1
                     }
                 },
-                highlight = new
-                {
-                    fields = new
-                    {
-                        extractedText = new { pre_tags = new[] { "<mark>" }, post_tags = new[] { "</mark>" } },
-                        fileName = new { pre_tags = new[] { "<mark>" }, post_tags = new[] { "</mark>" } }
-                    }
-                }
             };
 
             var response = await _httpClient.PostAsJsonAsync(
