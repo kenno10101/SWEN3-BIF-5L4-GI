@@ -149,8 +149,49 @@ services:
     command: server /data --console-address ":9001"
     volumes:
       - minio_data:/data
+        
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.11.0
+    container_name: swen_dms_elasticsearch
+    restart: always
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    volumes:
+      - elasticsearch_data:/usr/share/elasticsearch/data
+
+  # New Indexing Worker
+  indexing-worker:
+    build:
+      context: .
+      dockerfile: SWEN_DMS.IndexingWorker/Dockerfile
+    container_name: swen_dms_indexing_worker
+    restart: always
+    depends_on:
+      - rabbitmq
+      - elasticsearch
+      - rest-server
+    environment:
+      RabbitMq__Host: "rabbitmq"
+      RabbitMq__Port: "5672"
+      RabbitMq__User: "kendi"
+      RabbitMq__Password: "kendi"
+      RabbitMq__VirtualHost: "/"
+      RabbitMq__Exchange: "dms.exchange"
+      RabbitMq__Queue: "indexing.requests"
+      RabbitMq__RoutingKey: "indexing.request"
+
+      Elasticsearch__Uri: "http://elasticsearch:9200"
+      Elasticsearch__IndexName: "documents"
+
+      Rest__BaseUrl: "http://rest-server:8080"
 
 
 volumes:
   postgres_data:
   minio_data:
+  elasticsearch_data:
