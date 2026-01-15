@@ -117,22 +117,132 @@ $green: #0b6b3b;
   word-break: break-all;
 }
 
-.detail-meta-top {
+/* Header row that contains the document delete button */
+.detail-meta-top.actions-row {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 10px;
+  justify-content: flex-end;
   position: relative;
+}
 
-  .delete-btn {
-    position: absolute;
-    top: 0;
-    right: 0;
-    background: red;
-    color: white;
-    border: none;
-    padding: 5px 10px;
-    border-radius: 4px;
-    cursor: pointer;
-  }
+/* Keep delete button top-right INSIDE this row (but style comes from .delete-btn below) */
+.detail-meta-top.actions-row .delete-btn {
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+
+/* ---------- Notes UI ---------- */
+
+.notes-block {
+  margin-top: 0.4rem;
+}
+
+.note-create {
+  display: flex;
+  gap: 0.6rem;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-top: 0.35rem;
+}
+
+.note-input {
+  flex: 1 1 280px;
+  padding: 0.45rem 0.7rem;
+  border-radius: 999px;
+  border: 1px solid rgba(15, 23, 42, 0.12);
+  outline: none;
+  font-size: 0.9rem;
+}
+
+.note-input:focus {
+  border-color: rgba(11, 107, 59, 0.45);
+}
+
+.notes-list {
+  list-style: none;
+  padding: 0;
+  margin: 0.6rem 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+.note-item {
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  border-radius: 12px;
+  padding: 0.65rem 0.75rem;
+  background: rgba(11, 107, 59, 0.03);
+}
+
+.note-content {
+  font-size: 0.86rem;
+  color: #111827;
+}
+
+.note-meta {
+  margin-top: 0.35rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 0.78rem;
+  color: #6b7280;
+}
+
+/* Make sure note delete button is not absolutely positioned */
+.notes-block .delete-btn {
+  position: static;
+}
+
+/* ---------- Buttons (local copy for consistent styling) ---------- */
+
+.details-btn {
+  padding: 0.26rem 0.9rem;
+  border-radius: 999px;
+  border: none;
+  background: $green;
+  color: #ffffff;
+  font-size: 0.78rem;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  cursor: pointer;
+  box-shadow: 0 3px 10px rgba(11, 107, 59, 0.26);
+  transition: all 0.18s ease;
+}
+
+.details-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(11, 107, 59, 0.32);
+}
+
+.details-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.2);
+}
+
+.delete-btn {
+  padding: 0.26rem 0.9rem;
+  border-radius: 999px;
+  border: none;
+  background: #b91c1c;
+  color: #ffffff;
+  font-size: 0.78rem;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  cursor: pointer;
+  box-shadow: 0 3px 10px rgba(185, 28, 28, 0.22);
+  transition: all 0.18s ease;
+}
+
+.delete-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(185, 28, 28, 0.28);
+}
+
+.delete-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.2);
 }
