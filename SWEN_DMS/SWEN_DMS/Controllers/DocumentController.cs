@@ -16,15 +16,15 @@ public class DocumentController : ControllerBase
     private readonly DocumentService _service;
     private readonly ILogger<DocumentController> _logger;
     private readonly IMessagePublisher _publisher;   // rabbitmq
-    private readonly IMinioClient _minioClient;
+    private readonly IFileStore _fileStore;
     private readonly string _bucket;
     
-    public DocumentController(DocumentService service, ILogger<DocumentController> logger, IMessagePublisher publisher, IMinioClient minioClient, string bucket)
+    public DocumentController(DocumentService service, ILogger<DocumentController> logger, IMessagePublisher publisher, IFileStore fileStore, string bucket)
     {
         _service = service;
         _logger = logger;
         _publisher = publisher;            // rabbitmq
-        _minioClient = minioClient;
+        _fileStore = fileStore;
         _bucket = bucket;
     }
     
@@ -77,14 +77,15 @@ public class DocumentController : ControllerBase
         
         await using (var stream = dto.File.OpenReadStream())
         {
-            await _minioClient.PutObjectAsync(new PutObjectArgs()
-                .WithBucket(_bucket)
-                .WithObject(key)
-                .WithStreamData(stream)
-                .WithObjectSize(dto.File.Length)
-                .WithContentType(dto.File.ContentType)
+            await _fileStore.SaveAsync(
+                _bucket,
+                key,
+                stream,
+                dto.File.ContentType ?? "application/octet-stream",
+                dto.File.Length
             );
         }
+
 
         var created = await _service.AddDocumentAsync(dto, key);
         
