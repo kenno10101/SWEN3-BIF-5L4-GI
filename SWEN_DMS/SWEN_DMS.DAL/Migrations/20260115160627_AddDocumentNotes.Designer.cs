@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using SWEN_DMS.DAL;
@@ -11,9 +12,11 @@ using SWEN_DMS.DAL;
 namespace SWEN_DMS.DAL.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260115160627_AddDocumentNotes")]
+    partial class AddDocumentNotes
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,34 +24,6 @@ namespace SWEN_DMS.DAL.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
-
-            modelBuilder.Entity("SWEN_DMS.Models.AccessLogDaily", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<int>("AccessCount")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime>("CreatedAtUtc")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<DateOnly>("DayUtc")
-                        .HasColumnType("date");
-
-                    b.Property<Guid>("DocumentId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("DocumentId");
-
-                    b.HasIndex("DocumentId", "DayUtc")
-                        .IsUnique();
-
-                    b.ToTable("AccessLogsDaily", (string)null);
-                });
 
             modelBuilder.Entity("SWEN_DMS.Models.Document", b =>
                 {
@@ -102,17 +77,6 @@ namespace SWEN_DMS.DAL.Migrations
                     b.HasIndex("DocumentId");
 
                     b.ToTable("DocumentNotes", (string)null);
-                });
-
-            modelBuilder.Entity("SWEN_DMS.Models.AccessLogDaily", b =>
-                {
-                    b.HasOne("SWEN_DMS.Models.Document", "Document")
-                        .WithMany()
-                        .HasForeignKey("DocumentId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Document");
                 });
 
             modelBuilder.Entity("SWEN_DMS.Models.DocumentNote", b =>

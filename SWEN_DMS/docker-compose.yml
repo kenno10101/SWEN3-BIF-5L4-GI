@@ -189,7 +189,27 @@ services:
       Elasticsearch__IndexName: "documents"
 
       Rest__BaseUrl: "http://rest-server:8080"
+  
+  batch-worker:
+    build:
+      context: .
+      dockerfile: SWEN_DMS.BatchWorker/Dockerfile
+    container_name: swen_dms_batch_worker
+    restart: always
+    depends_on:
+      - postgres
+    environment:
+      ConnectionStrings__DefaultConnection: "Host=postgres;Port=5432;Database=dms_dev;Username=kendi;Password=kendi"
 
+      AccessLogBatch__InputFolder: "/accesslogs/in"
+      AccessLogBatch__ArchiveFolder: "/accesslogs/archive"
+      AccessLogBatch__FilePattern: "access_*.xml"
+      AccessLogBatch__RunHourUtc: "1"
+      AccessLogBatch__RunMinuteUtc: "0"
+      AccessLogBatch__RunOnStartup: "true"
+    volumes:
+      - ./accesslogs/in:/accesslogs/in
+      - ./accesslogs/archive:/accesslogs/archive
 
 volumes:
   postgres_data:

@@ -13,7 +13,7 @@
     <article class="detail-card">
       <header class="detail-header">
         <h2>{{ document.fileName }}</h2>
-        <div class="detail-meta-top">
+        <div class="detail-meta-top actions-row">
           <span class="badge">Document Detail</span>
           <span class="detail-date">
             Uploaded on {{ document.uploadedAt | date: 'short' }}
@@ -57,6 +57,47 @@
           </p>
         </div>
       </div>
+      <div class="detail-block notes-block">
+        <h3>Notes</h3>
+
+        <div class="note-create">
+          <input
+            class="note-input"
+            type="text"
+            placeholder="Add a note..."
+            [(ngModel)]="noteContent"
+            (keyup.enter)="addNote()"
+          />
+          <button type="button" class="details-btn" (click)="addNote()">Add</button>
+        </div>
+
+        @if (notesLoading) {
+          <div class="state-text">Loading notes...</div>
+        }
+
+        @if (notesError) {
+          <div class="state-text error">{{ notesError }}</div>
+        }
+
+        @if (!notesLoading && !notesError && notes.length) {
+          <ul class="notes-list">
+            @for (n of notes; track n.id) {
+              <li class="note-item">
+                <div class="note-content">{{ n.content }}</div>
+                <div class="note-meta">
+                  <span>{{ n.createdAtUtc | date: 'short' }}</span>
+                  <button type="button" class="delete-btn note-delete-btn" (click)="deleteNote(n.id)">Delete</button>
+                </div>
+              </li>
+            }
+          </ul>
+        }
+
+        @if (!notesLoading && !notesError && !notes.length) {
+          <p class="muted">No notes yet.</p>
+        }
+      </div>
+
     </article>
   }
 

@@ -13,6 +13,9 @@ using FluentValidation.AspNetCore;
 using Minio;
 using SWEN_DMS.Validators;
 using SWEN_DMS.Middleware;
+using SWEN_DMS.DAL.Repositories;
+using SWEN_DMS.BLL.Services;
+
 
 
 //comment to push develop branch
@@ -26,6 +29,9 @@ builder.Services.AddSingleton<IMessagePublisher, RabbitMqPublisher>();
 // Repository + Service
 builder.Services.AddScoped<IDocumentRepository, DocumentRepository>();
 builder.Services.AddScoped<DocumentService>();
+builder.Services.AddScoped<IDocumentNoteRepository, DocumentNoteRepository>();
+builder.Services.AddScoped<DocumentNoteService>();
+
 
 // Logging
 builder.Logging.ClearProviders();
@@ -63,10 +69,12 @@ builder.Services.AddSingleton<IMinioClient>(sp =>
 
 builder.Services.AddSingleton(sp => minioBucket);
 
+builder.Services.AddScoped<IFileStore, MinioFileStore>();
+
+
 // Add HttpClient for SearchService
 builder.Services.AddHttpClient<ISearchService, SearchService>();
 
-// Or if you prefer separate registration:
 builder.Services.AddHttpClient();
 builder.Services.AddScoped<ISearchService, SearchService>();
 
@@ -174,3 +182,6 @@ app.MapPost("/_mq/test", async (IMessagePublisher publisher) =>
 app.MapControllers();
 
 app.Run();
+
+//integration test
+public partial class Program { }

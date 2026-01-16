@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 import { API_BASE_URL } from '../config/api-base-url.token';
 import { DocumentDto } from './document.model';
 import { SearchResultDto } from './search-result.model';
+import { DocumentNoteDto, DocumentNoteCreateDto } from './document-note.model';
 
 @Injectable({ providedIn: 'root' })
 export class DocumentService {
@@ -44,4 +45,18 @@ export class DocumentService {
   deleteDocument(id: string): Observable<void> {
     return this.http.delete<void>(`${this.documentUrl}/${id}`);
   }
+
+  getNotes(documentId: string): Observable<DocumentNoteDto[]> {
+    return this.http.get<DocumentNoteDto[]>(`${this.baseUrl}/documents/${documentId}/notes`);
+  }
+
+  addNote(documentId: string, content: string): Observable<DocumentNoteDto> {
+    const payload: DocumentNoteCreateDto = { content };
+    return this.http.post<DocumentNoteDto>(`${this.baseUrl}/documents/${documentId}/notes`, payload);
+  }
+
+  deleteNote(noteId: string): Observable<void> {
+    return this.http.delete<void>(`${this.baseUrl}/notes/${noteId}`);
+  }
+
 }

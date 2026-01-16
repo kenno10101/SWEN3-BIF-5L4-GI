@@ -12,7 +12,7 @@
     <ItemGroup>
         <PackageReference Include="coverlet.collector" Version="6.0.0"/>
         <PackageReference Include="FluentAssertions" Version="8.7.1" />
-        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.8.0"/>
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.0.1" />
         <PackageReference Include="Moq" Version="4.20.72" />
         <PackageReference Include="NUnit" Version="3.14.0"/>
         <PackageReference Include="NUnit.Analyzers" Version="3.9.0"/>
@@ -24,10 +24,15 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\SWEN_DMS.BatchWorker\SWEN_DMS.BatchWorker.csproj" />
       <ProjectReference Include="..\SWEN_DMS.BLL\SWEN_DMS.BLL.csproj" />
       <ProjectReference Include="..\SWEN_DMS.DAL\SWEN_DMS.DAL.csproj" />
       <ProjectReference Include="..\SWEN_DMS.DTOs\SWEN_DMS.DTOs.csproj" />
+      <ProjectReference Include="..\SWEN_DMS.GenAIWorker\SWEN_DMS.GenAIWorker.csproj" />
+      <ProjectReference Include="..\SWEN_DMS.IndexingWorker\SWEN_DMS.IndexingWorker.csproj" />
+      <ProjectReference Include="..\SWEN_DMS.IntegrationTests\SWEN_DMS.IntegrationTests.csproj" />
       <ProjectReference Include="..\SWEN_DMS.Models\SWEN_DMS.Models.csproj" />
+      <ProjectReference Include="..\SWEN_DMS.OcrWorker\SWEN_DMS.OcrWorker.csproj" />
       <ProjectReference Include="..\SWEN_DMS\SWEN_DMS.csproj" />
     </ItemGroup>
 

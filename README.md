@@ -24,19 +24,75 @@ GENAI_MODEL=gemini-2.0-flash
 ```
 ---
 
+## Swagger / API Documentation
+
+The REST API exposes an OpenAPI/Swagger UI when running locally via Docker:
+
+Swagger UI: http://localhost:8080/swagger/index.html
+
+---
+
+## Additional Use Case: Document Notes
+### Goal
+Each document can store multiple notes/annotations (e.g., comments, short remarks, audit hints).
+
+### Business Rules
+A note belongs to exactly one document (DocumentId).
+Note content must not be empty.
+CreatedAtUtc is set server-side.
+
+---
+
+## Batch Processing: Daily Access Statistics (XML)
+### Purpose
+
+A scheduled batch worker imports daily access statistics from external systems.
+External systems drop XML files into an input folder. The batch worker reads and processes matching files, stores daily access counts per document in PostgreSQL, and then archives processed files to prevent duplicate processing.
+
+### XML Format
+The expected XML format is:
+- root element: <accessStatistics>
+- attribute dateUtc (YYYY-MM-DD)
+  - multiple <document> elements with:
+      -documentId (GUID)
+      - count (integer)
+
+```Example XML file (access_2026-01-16.xml):
+<?xml version="1.0" encoding="utf-8"?>
+<accessStatistics dateUtc="2026-01-16">
+    <document documentId="ee8511c2-b0da-4a83-afe8-d3fefb4e2879" count="2" />
+    <document documentId="d634393f-8e04-42cf-8f37-4a05c64eb85c" count="3" />
+</accessStatistics>
+```
+
+### Processing Behavior
+- The batch worker reads all files in InputFolder matching FilePattern.
+- For each <document> entry it updates the daily access counter for the given documentId and dateUtc.
+- After successful processing, the file is moved to ArchiveFolder (timestamped) to avoid redundant processing.
+- If processing fails, the file remains in the input folder for retry after the issue is fixed.
+
+---
+
 ## High-Level Architecture
 
 - **REST API (ASP.NET Core)**  
-  Handles document upload/retrieval, stores metadata in PostgreSQL and files in MinIO, and publishes jobs to RabbitMQ.
+  Handles document upload/retrieval, stores metadata in PostgreSQL and files in MinIO, publishes jobs to RabbitMQ, and exposes endpoints for search and document notes.
 
 - **OCR Worker**  
-  Reads jobs from RabbitMQ, fetches PDFs from MinIO, runs OCR (Tesseract/Ghostscript.NET) and sends extracted text back to RabbitMQ.
+  Reads jobs from RabbitMQ, fetches PDFs from MinIO, runs OCR (Tesseract / pdftoppm + tesseract) and sends extracted text back to the REST API. It also forwards extracted text to downstream workers.
 
 - **GenAI Worker**  
-  Reads OCR text from RabbitMQ, calls Google Gemini to generate a summary, and updates the document via the REST API.
+  Reads OCR text from RabbitMQ, calls Google Gemini to generate a summary, and updates the document summary via the REST API.
+
+- **Indexing Worker (Elasticsearch)**  
+  Receives indexing requests via RabbitMQ and stores the document text content (OCR result + metadata such as filename/tags/summary) into Elasticsearch to enable full-text search.
+
+- **Batch Worker (Daily Access Statistics)**  
+  Scheduled service that reads daily XML access log files from an input folder, stores per-document daily access counts in PostgreSQL, and archives processed files to prevent duplicate processing.
 
 - **Infrastructure**  
-  PostgreSQL, MinIO and RabbitMQ are run together with all services via `docker-compose`.
+  PostgreSQL, MinIO, RabbitMQ, and Elasticsearch are run together with all services via `docker-compose`.
+
 
 
 ---
@@ -77,6 +133,21 @@ GENAI_MODEL=gemini-2.0-flash
 
 - `Tesseract`  
   .NET wrapper for the Tesseract OCR engine.
+
+- `NEST`  
+  Elasticsearch .NET client used for indexing and querying documents.
+
+- `Microsoft.Extensions.Hosting`  
+  Hosting abstractions for .NET applications (used for worker/background services).
+
+- `Microsoft.Extensions.Http`  
+  Adds `HttpClientFactory` support for typed/named HTTP clients.
+
+- `Microsoft.Extensions.Logging`  
+  Core logging abstractions used across the application.
+
+- `Microsoft.Extensions.Logging.Console`  
+  Console logging provider for structured logs in containers/local dev.
 
 ### Testing, Quality & Coverage
 
